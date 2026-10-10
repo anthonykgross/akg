@@ -35,6 +35,7 @@ If nothing relevant changed (e.g. a commit touching only the team's README), upd
 |---|---|---|
 | Value added or changed | No | One tab per change: **Apply (Recommended)** / Keep current, showing the effect on the generated files, including the settings derived from that answer (rules.md). |
 | Value added or changed | Yes | Conflict: ask "Team says X, project says Y" → **Keep local (Recommended)** / Take team / Merge (lists and text only). |
+| `questions` changed | — | No tab of its own: it only triggers the new questions below. |
 | Value removed | — | Nothing to do on generated files beyond what the user approves; akg never removes settings. Mention it in one line. |
 | New active question (new in the catalog/team list, or newly enabled by `questions`) whose key has no value | — | Ask it like `/akg:setup` step 4: known answer first ("(Team)" / "(Detected)"), then its options, then "I don't know" (checkboxes without "I don't know" if `multiple`). |
 | Question replaced or removed | — | Ignore unless its key has no value. |
@@ -43,7 +44,7 @@ If nothing relevant changed (e.g. a commit touching only the team's README), upd
 
 Group changes and conflicts in `AskUserQuestion` calls of up to 4 tabs, then new questions, then plugins. Recompute derived settings only for answers that changed (team value taken, new question answered).
 
-**Refusing a team change makes it a local override**: if the user declines a non-overridden value, write the current value into the project `config.yaml`; a declined plugin goes to `plugins.disabled`. That way it is not proposed again.
+**Refusing a team change makes it a local override**: if the user declines a non-overridden value, write the current value into the project `config.yaml`; a declined plugin goes to `plugins.disabled`. That way it is not proposed again. A declined list addition in `settings` (a new `deny` rule) or template change is simply not applied: nothing records it, and it is not proposed again because `synced` moves to the new version (only the no-snapshot fallback could show it again).
 
 ## 4. Review and write
 
