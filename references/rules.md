@@ -1,6 +1,6 @@
 # akg rules
 
-Shared by `/akg:setup` and `/akg:sync`. Paths: `<plugin>` = `${CLAUDE_PLUGIN_ROOT}`, `<team>` = the fetched team path, `<project>` = the project root.
+Shared by `/akg:setup` and `/akg:pull`. Paths: `<plugin>` = `${CLAUDE_PLUGIN_ROOT}`, `<team>` = the fetched team path, `<project>` = the project root.
 
 ## Layers
 

@@ -17,4 +17,4 @@ fixtures/try.sh extends-local-team
 
 Copies all fixtures to a temp dir (never test in place: files would be written into this repo and its `CLAUDE.md` would leak into the session), turns `team/` into a git repo, and prints the `claude --plugin-dir` command to run.
 
-To test `/akg:sync`: commit a change in the temp `team/` copy, start a new session (reminder expected), then run `/akg:sync`.
+To test `/akg:pull`: commit a change in the temp `team/` copy, start a new session (reminder expected), then run `/akg:pull`.

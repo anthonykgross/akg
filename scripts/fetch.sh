@@ -8,6 +8,7 @@
 # Prints key=value lines:
 #   kind=dir|file      path=<absolute path>      version=<commit sha | content hash>
 # Remote sources are cached in ~/.cache/akg/ and refreshed on every call.
+# Remote files also keep a copy per version: <dir>/<version>.yaml.
 set -euo pipefail
 
 src="${1:?usage: fetch.sh <source> [base-dir]}"
@@ -33,7 +34,10 @@ fetch_file() {
   local url="$1" dir="$cache/$(slug "$1")"
   mkdir -p "$dir"
   curl -fsSL --max-time 10 -o "$dir/config.yaml" "$url"
-  echo "kind=file"; echo "path=$dir/config.yaml"; echo "version=$(sha256sum "$dir/config.yaml" | cut -c1-12)"
+  local v; v="$(sha256sum "$dir/config.yaml" | cut -c1-12)"
+  # Keep each version so /akg:pull can diff against the last synced one.
+  cp "$dir/config.yaml" "$dir/$v.yaml"
+  echo "kind=file"; echo "path=$dir/config.yaml"; echo "version=$v"
 }
 
 case "$src" in

@@ -12,7 +12,7 @@ work="$(mktemp -d -t akg-fixtures-XXXXXX)"
 cp -r "$repo/fixtures/." "$work/"
 rm -f "$work/try.sh" "$work/README.md"
 
-# The team repo is a git repo, so /akg:sync and the hook can track commits.
+# The team repo is a git repo, so /akg:pull and the hook can track commits.
 git -C "$work/team" init -q
 git -C "$work/team" add -A
 git -C "$work/team" -c user.name=akg -c user.email=akg@example.com commit -qm "team config v1"

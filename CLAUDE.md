@@ -15,7 +15,7 @@ The plugin is named `akg`, so Claude Code exposes its skills as `/akg:<skill>`.
 | Command | Purpose |
 |---|---|
 | `/akg:setup` | First run: link the team config, detect the stack, ask questions, propose config and plugins |
-| `/akg:sync` | Pull team config updates into the project, without touching local overrides |
+| `/akg:pull` | Pull team config updates into the project, without touching local overrides |
 
 ## Files
 
@@ -67,7 +67,7 @@ Code convention **templates** (`common`, `backend`, `frontend`). Claude adapts t
 ## Design decisions
 
 - **Three layers: akg → team → project.** The layer closest to the project wins, for every file (`config.yaml`, `questions.md`, `patterns/`). akg ships minimal base questions and templates.
-- **The team config is optional.** Without `extends`, `/akg:setup` works the same; `/akg:sync` and the session hook do nothing.
+- **The team config is optional.** Without `extends`, `/akg:setup` works the same; `/akg:pull` and the session hook do nothing.
 - **Nothing is imposed.** Config, settings, marketplaces and plugins are always proposed and approved by the user.
 - **Team repo = a standard Claude Code plugin marketplace** (`.claude-plugin/marketplace.json`) plus `.claude/akg/`. Skills, hooks, agents and MCP servers are distributed as regular plugins; akg does not reinvent distribution, and plugins stay usable without akg.
 - **Plugins are enabled, not copied** (`enabledPlugins`). akg evaluates the `relevance` blocks of `marketplace.json` itself: a plugin with `relevance` is proposed only when its signals match the project; a plugin without `relevance` is proposed on every project. No marketplace → no plugin proposed. akg says why each plugin is proposed.
@@ -75,9 +75,9 @@ Code convention **templates** (`common`, `backend`, `frontend`). Claude adapts t
 - **Settings merge.** Deep merge into `.claude/settings.json`: objects key by key, arrays concatenated and deduplicated; a differing scalar is shown as a conflict. akg never removes anything.
 - **Plugins from an external repo** must be installed once per developer; akg gives the exact install command when proposing them.
 - **Stack and commands** (test, lint, build) are **detected, then always shown for confirmation or edit**. Prefer commands already declared in the project (`package.json` scripts, `Makefile` targets…); never invent elaborate ones.
-- **Team cache** in `~/.cache/akg/`, refreshed on each `/akg:setup` and `/akg:sync`.
-- **`/akg:sync`** never overwrites a local override without approval: it shows the conflict ("team says X, project says Y") and lets the user keep local, take team, or merge.
-- **Sync reminder.** A `SessionStart` hook gets the team's latest version (`git ls-remote` for a repo, download + hash for a remote file; ~2 s timeout) and compares it with `synced`. Silent when nothing changed or offline; otherwise one line: `akg: team config updated — /akg:sync`. Shown once per new team version (notification state per developer in `~/.cache/akg/`).
+- **Team cache** in `~/.cache/akg/`, refreshed on each `/akg:setup` and `/akg:pull`.
+- **`/akg:pull`** never overwrites a local override without approval: it shows the conflict ("team says X, project says Y") and lets the user keep local, take team, or merge.
+- **Sync reminder.** A `SessionStart` hook gets the team's latest version (`git ls-remote` for a repo, download + hash for a remote file; ~2 s timeout) and compares it with `synced`. Silent when nothing changed or offline; otherwise one line: `akg: team config updated — /akg:pull`. Shown once per new team version (notification state per developer in `~/.cache/akg/`).
 - **Remote single file** over HTTPS only, no auth in v1. Private team config → use a git repo (developer's git credentials).
 - **Empty team repo:** nothing is proposed for now.
 - **No dependency on the built-in `/init`.** `/akg:setup` does its own repo analysis and writes `CLAUDE.md`.
@@ -99,10 +99,12 @@ The repo is both the plugin and its own marketplace (plugin name `akg`; names mu
   marketplace.json     # single entry, "source": "./"
 skills/
   setup/SKILL.md
-  sync/SKILL.md
+  pull/SKILL.md
 hooks/hooks.json
 scripts/fetch.sh       # resolve a team/marketplace source to a local path + version
-references/rules.md    # layers, merge, relevance rules shared by setup and sync
+scripts/snapshot.sh    # team config at a past version, for pull diffs
+scripts/check-team.sh  # SessionStart hook: one-line reminder on new team version
+references/rules.md    # layers, merge, relevance rules shared by setup and pull
 defaults/              # akg base layer
   questions.md
   patterns/{common,backend,frontend}.md

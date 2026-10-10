@@ -16,7 +16,8 @@ Set up Claude Code on this project. Rules for layers, merging, marketplaces and 
 - Explain domain jargon in one sentence when it appears.
 - **Never write a file without showing it and getting approval.** Nothing is imposed: every value, setting and plugin is a proposal.
 - Never invent commands: use the ones the project declares.
-- If `.claude/akg/config.yaml` already exists, say so and suggest `/akg:sync` instead; continue only if the user wants to redo the setup (then use the existing values as defaults).
+- **A dismissed or empty answer never ends the flow.** Take the conservative choice for that question (no plugin, keep the current value, skip the file), say it in one line, and continue with the next step. Stop only if the user explicitly asks to stop.
+- If `.claude/akg/config.yaml` already exists, say so and suggest `/akg:pull` instead; continue only if the user wants to redo the setup (then use the existing values as defaults).
 
 ## 1. Team config
 
@@ -55,9 +56,9 @@ Build the merged question list (rules.md). For each question, in order:
 
 Collect marketplaces and evaluate plugin relevance (rules.md). If there is no marketplace, skip this step silently.
 
-Ask with `AskUserQuestion` and `multiSelect: true`: one option per plugin (label = plugin name, description = its reason, e.g. "package.json depends on react"). Recommended: all. With more than 4 plugins, split into several questions (tabs) by marketplace.
+Ask with `AskUserQuestion` and `multiSelect: true`: one option per plugin (label = plugin name, description = its reason, e.g. "package.json depends on react"), plus a last option **"None"** so the user can explicitly pick no plugin. Recommended: all. With more than 3 plugins, split into several questions (tabs) by marketplace, each with its own "None".
 
-Refused plugins go to `plugins.disabled`.
+Selecting "None", selecting nothing, or dismissing the question all mean "no plugin": refused plugins go to `plugins.disabled`, then **continue to step 5** — choosing no plugin never ends the setup.
 
 ## 5. Generate
 
@@ -74,4 +75,4 @@ For each file, ask with `AskUserQuestion`: options "Write (Recommended)", "Edit"
 Then, in at most 3 lines:
 - what was written;
 - the install command for any external-source plugin;
-- next step: commit `.claude/` and `CLAUDE.md` so teammates get the same setup; `/akg:sync` will pull team updates.
+- next step: commit `.claude/` and `CLAUDE.md` so teammates get the same setup; `/akg:pull` will pull team updates.
