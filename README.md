@@ -2,9 +2,9 @@
 
 A Claude Code plugin that sets up Claude Code on a project from an optional **team config**, by asking a few questions about the project, then keeps it in sync with the team.
 
-- **Scans first, asks last**: reads the manifests, README, CI, tests and recent commits, then asks its questions (project context, Definition of Done, TDD, review level, ticket tracker, plus your team's) with the detected answer pre-selected: one click to confirm, or correct and go further.
-- **Detects, then confirms**: stack, test/lint/build commands, monorepo sub-projects.
+- **Scans first**: manifests, README, CI, tests and recent commits — stack, test/lint/build commands, monorepo sub-projects.
 - **Shows what it understood**: purpose, key folders, architecture, integrations — and lets you add what matters ("edge functions are in `supabase/functions`", "we do DDD"). It lands in a `Project context` section of `CLAUDE.md` you own.
+- **Asks every question, pre-filled**: project context, Definition of Done, TDD, review level, ticket tracker, plus your team's. The known answer comes first — "(Team)", "(Project)" or "(Detected)" with its source — then the other options and "I don't know". One click to confirm, or correct and go further.
 - **Generates**: `CLAUDE.md` (one per sub-project in a monorepo), `.claude/settings.json`, and the plugins to enable.
 - **Never imposes**: every file is shown before it is written; every value, setting and plugin is a proposal. Local choices always win over the team's.
 
@@ -19,7 +19,7 @@ A Claude Code plugin that sets up Claude Code on a project from an optional **te
 
 | Command | When |
 |---|---|
-| `/akg:setup` | Once per project: link the team config (or none), confirm the detected stack, answer the questions, review the generated files. |
+| `/akg:setup` | Once per project: link the team config (or none), confirm what was detected and understood, answer the pre-filled questions, review the generated files. |
 | `/akg:pull` | When the team config changes: applies team updates, shows conflicts with your local overrides ("team says X, project says Y"), proposes new questions and plugins. |
 
 When the project extends a team config, a new session shows one line when the team has a new version:
