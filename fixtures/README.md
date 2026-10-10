@@ -4,8 +4,8 @@ Sandbox projects to replay each user flow by hand.
 
 | Fixture | Stack | Team config | Checks |
 |---|---|---|---|
-| `no-team/` | Node CLI | none | Setup works without a team; 8 default questions (5 `workflow` + dependencies, architecture, secrets; Claude autonomy as checkboxes; no Command environment, no Docker); answers "(Detected)" from the scan; no plugin proposed |
-| `extends-local-team/` | React app | `../team` | `../team` offered as team config; team values pre-selected "(Team)"; team `questions: [workflow, tracker, deploy]` → 7 questions (team Review and Deployment override akg's; Ticket tracker from the akg catalog; answering Jira asks its URL and project key in plain text); `code-review` + `react-conventions` proposed |
+| `no-team/` | Node CLI | none | Setup works without a team; 10 default questions (5 `workflow` + dependencies, local environment, architecture, secrets, ticket tracker; Claude autonomy as checkboxes; no Command environment, no Docker); answers "(Detected)" from the scan; no plugin proposed |
+| `extends-local-team/` | React app | `../team` | `../team` offered as team config; team values pre-selected "(Team)"; team `questions: [workflow, tracker, deploy]` → 7 questions (team Review and Deployment override akg's; Ticket tracker from the akg catalog; answering Jira asks its URL, project key and hosting in plain text); `code-review` + `react-conventions` proposed |
 | `monorepo/` | Vue + Go + Terraform | none (or `../team`) | Sub-project detection and per-folder `CLAUDE.md` |
 | `team/` | — | — | Local team repo: marketplace with 3 plugins + `.claude/akg/` |
 

@@ -13,7 +13,7 @@ Format, for every layer (akg → team → project):
   They can ask a follow-up question (with its own key), check something read-only (a command, an MCP server, a file),
   propose something (a line in CLAUDE.md, a plugin, a setting). They never install or modify anything by themselves.
 Which questions are asked is set by `questions:` in config.yaml (a list of key prefixes, e.g. [workflow, tracker]).
-Without it: `workflow`, `deps`, `env`, `arch`, `security` + every question defined in the team/project questions.md. The rest of this catalog is off by default.
+Without it: `workflow`, `deps`, `env`, `arch`, `security`, `tracker` + every question defined in the team/project questions.md. The rest of this catalog is off by default.
 Every active question is asked. A known answer (team, project or detected) is offered first; "I don't know" is always offered last.
 -->
 
@@ -95,6 +95,20 @@ Where are the project commands (tests, lint, build) run?
 → Ask only if a container setup is detected (`Dockerfile`, `compose.yaml` / `docker-compose.yml`, `.devcontainer/`); otherwise skip it silently.
 → Pre-fill from how the README, Makefile or scripts run the commands (e.g. a `make test` target calling `docker compose exec`).
 
+## Local environment
+key: env.tools
+multiple
+Anything Claude should know to work on this project locally?
+- <detected shortcut> (Detected)
+- <detected project CLI> (Detected)
+- <detected task runner> (Detected)
+- Something to add
+  → Ask in one plain-text message: CLIs, shortcuts, aliases and prerequisites (VPN, aws-vault, seed data…), and what each is for (key: env.notes).
+→ The options are built from the scan: up to 3 detected items (Makefile targets such as `make up` / `make shell`, project CLIs such as `bin/console`, `artisan`, `manage.py`, task runners such as `just` or a Taskfile), each labelled "(Detected)" with its source, then "Something to add". Nothing detected → single choice "Nothing special (recommended)" / "Something to add".
+→ If the commands run in a container (env.runtime): ask the same for inside the container (tools available only there, how to open a shell, which service).
+→ Check read-only that the CLIs mentioned are on the PATH (or in the container image definition); report missing ones in one line.
+→ CLAUDE.md: a "## Local environment" section, one line per tool and when to use it. No settings.
+
 ## Architecture
 key: arch.style
 How is the code organised?
@@ -116,20 +130,24 @@ Where do secrets live?
 
 ## Ticket tracker
 key: tracker.tool
-Do you use a ticket tracker?
+Where are tickets tracked?
 - None (recommended)
 - Jira
-  → Ask its URL and the project key (keys: tracker.url, tracker.project): offer detected values as options, otherwise ask in one plain-text message.
-  → Check whether an Atlassian/Jira MCP server is configured (`claude mcp list`) or a `jira` CLI is on the PATH; if neither, suggest one.
+  → Ask the site URL, the project key and Cloud vs Data Center (keys: tracker.url, tracker.project, tracker.hosting): offer detected values as options (URL from the README, key from commits like `SHOP-123`), otherwise ask in one plain-text message.
+  → Check whether an Atlassian/Jira MCP server is configured (`claude mcp list`) or a `jira` CLI is on the PATH; if neither, suggest one (the Atlassian MCP server works with Cloud only).
   → CLAUDE.md: reference tickets as <PROJECT>-123 in branch names and commit messages.
+- GitHub Issues
+  → Detect the repository from `git remote -v` (key: tracker.project); ask in plain text only if there is no GitHub remote.
+  → Check whether the `gh` CLI is on the PATH and authenticated (`gh auth status`); if not, suggest it.
+  → CLAUDE.md: reference issues as #123 in commit messages; "Closes #123" in pull requests.
 - Linear
   → Ask the team key (key: tracker.project): offer a detected value as option, otherwise ask in one plain-text message.
   → Check whether a Linear MCP server is configured (`claude mcp list`); if not, suggest it.
   → CLAUDE.md: reference issues by their identifier in branch names and commit messages.
-- GitHub Issues
-  → Check whether the `gh` CLI is on the PATH and authenticated (`gh auth status`); if not, suggest it.
-  → CLAUDE.md: reference issues as #123 in commit messages.
-→ Add the tracker (and URL if any) to the Project context.
+→ Pre-fill from the scan: ticket ids in recent commits and branch names, tracker links in the README, `.github/ISSUE_TEMPLATE/`.
+→ Any other tool (GitLab, Azure DevOps, Trello…), given through "Other": ask in one plain-text message its URL and how tickets are referenced (keys: tracker.url, tracker.project); check whether its CLI is on the PATH (`glab`, `az`…).
+→ If Claude can read the tracker (MCP server or CLI available): CLAUDE.md "When given a ticket id, read the ticket before starting."
+→ Add the tracker, its URL and project to the Project context.
 
 ## Deployment
 key: deploy.target
