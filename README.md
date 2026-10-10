@@ -57,7 +57,7 @@ plugins:
   disabled: [code-review]
 ```
 
-`extends` accepts `github:owner/repo`, a git URL, an HTTPS URL to a single `config.yaml`, or a local path. Private repos use your git credentials; private single files are not supported.
+`extends` accepts `github:owner/repo`, a git URL, an HTTPS URL to a single `config.yaml`, or a local path. Add `#<branch>` (or a tag or commit) to a repo or local git directory to follow something other than the default branch: `github:acme/claude-team#develop`. Private repos use your git credentials; private single files are not supported.
 
 ## Team repo
 

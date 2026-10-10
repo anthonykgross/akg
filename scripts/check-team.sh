@@ -17,15 +17,31 @@ yaml_get() {
 extends="$(yaml_get extends)"
 synced="$(yaml_get synced)"
 [ -n "$extends" ] || exit 0
+ref=""
+case "$extends" in *#*) ref="${extends##*#}" ;; esac
+src="${extends%#*}"
 
 export GIT_TERMINAL_PROMPT=0 GIT_SSH_COMMAND="ssh -o BatchMode=yes -o ConnectTimeout=2"
 
-case "$extends" in
-  github:*)                     latest="$(timeout 2 git ls-remote "https://github.com/${extends#github:}.git" HEAD 2>/dev/null | cut -f1)" ;;
-  http*://*.yaml|http*://*.yml) latest="$(curl -fsSL --max-time 2 "$extends" 2>/dev/null | sha256sum | cut -c1-12)"
+# Commit of the configured ref on the remote: HEAD, a branch, a tag (peeled) or a commit SHA.
+remote_sha() {
+  if [ -z "$ref" ]; then
+    timeout 2 git ls-remote "$1" HEAD 2>/dev/null | cut -f1
+  elif printf '%s' "$ref" | grep -Eq '^[0-9a-f]{40}$'; then
+    echo "$ref"
+  else
+    timeout 2 git ls-remote "$1" "refs/heads/$ref" "refs/tags/$ref" "refs/tags/$ref^{}" 2>/dev/null \
+      | awk -v r="$ref" '$2=="refs/heads/"r{h=$1} $2=="refs/tags/"r"^{}"{p=$1} $2=="refs/tags/"r{t=$1}
+                         END{print h ? h : (p ? p : t)}'
+  fi
+}
+
+case "$src" in
+  github:*)                     latest="$(remote_sha "https://github.com/${src#github:}.git")" ;;
+  http*://*.yaml|http*://*.yml) latest="$(curl -fsSL --max-time 2 "$src" 2>/dev/null | sha256sum | cut -c1-12)"
                                 # an empty download still hashes: treat as offline
                                 [ "$latest" = "e3b0c44298fc" ] && latest="" ;;
-  http*://*|git@*|ssh://*)      latest="$(timeout 2 git ls-remote "$extends" HEAD 2>/dev/null | cut -f1)" ;;
+  http*://*|git@*|ssh://*|file://*) latest="$(remote_sha "$src")" ;;
   *)                            latest="$("$(dirname "$0")/fetch.sh" "$extends" "$project" 2>/dev/null | sed -n 's/^version=//p')" ;;
 esac
 

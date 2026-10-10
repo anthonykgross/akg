@@ -22,7 +22,7 @@ The layer closest to the project wins. A missing file in a layer is not an error
 
 ## `config.yaml` keys
 
-- `extends` (project only): team source — `github:owner/repo`, git URL, `https://…/config.yaml`, or a local path relative to the project.
+- `extends` (project only): team source — `github:owner/repo`, git URL, `https://…/config.yaml`, or a local path relative to the project. Optional `#<ref>` suffix (branch, tag or commit) for git sources and local git repos: `github:acme/claude-team#develop`. Without it: the remote's default branch, or the working tree of a local directory.
 - `synced` (project only): team version at last sync (commit SHA or content hash, as printed by `fetch.sh`).
 - `settings`: raw fragment of Claude Code's `settings.json`.
 - `marketplaces`: list of marketplace sources (same forms as `extends`, git or local directory).
@@ -32,7 +32,7 @@ The layer closest to the project wins. A missing file in a layer is not an error
 
 ## Fetching
 
-Run `<plugin>/scripts/fetch.sh <source> <project>`. It prints `kind`, `path`, `version`. If it fails (offline, auth, not found), say so in one line and continue as if there were no team config — never block.
+Run `<plugin>/scripts/fetch.sh <source> <project>` (with its `#ref`, if any). It prints `kind`, `path`, `version`, and possibly `warning` (e.g. a `#ref` ignored on a single file): relay a warning in one line. If it fails (offline, auth, not found), say so in one line and continue as if there were no team config — never block.
 
 ## Marketplaces
 
@@ -60,6 +60,7 @@ Always say why a plugin is proposed: "`react-conventions` — `package.json` dep
 - **Marketplaces**: one `extraKnownMarketplaces` entry per marketplace, keyed by the `name` in its `marketplace.json`:
   - `github:owner/repo` → `{ "source": { "source": "github", "repo": "owner/repo" } }`
   - git URL → `{ "source": { "source": "git", "url": "<url>" } }`
+  - a `#<ref>` on the source → add `"ref": "<ref>"` to that `source` object. The team's own marketplace uses the `extends` ref, so plugins come from the same branch as the config.
   - local directory → `{ "source": { "source": "directory", "path": "<path relative to project>" } }`
 - **Plugins**: `enabledPlugins["<plugin>@<marketplace>"] = true` for each accepted plugin.
 - A plugin whose `source` is not a relative path (external repo) must be installed once per developer: give `claude plugin install <plugin>@<marketplace> --scope project`.

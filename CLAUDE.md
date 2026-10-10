@@ -34,7 +34,7 @@ Claude Code never reads it; akg generates native files from it.
 
 | Key | Content | Generates |
 |---|---|---|
-| `extends` | Team config: a single file (local path or HTTPS URL) or a project (local dir or git repo). Project side only. One value. | — |
+| `extends` | Team config: a single file (local path or HTTPS URL) or a project (local dir or git repo), with an optional `#<branch/tag/commit>` for git sources. Project side only. One value. | — |
 | `synced` | Last synced team version: commit SHA (repo) or content hash (file). Project side only, committed. | — |
 | `settings` | Raw fragment of Claude Code's `settings.json` (permissions, env, hooks…), deep-merged | `.claude/settings.json` |
 | `marketplaces` | Plugin marketplaces to draw plugins from | `extraKnownMarketplaces` |
@@ -81,6 +81,7 @@ Code convention **templates** (`common`, `backend`, `frontend`). Claude adapts t
 - **Team cache** in `~/.cache/akg/`, refreshed on each `/akg:setup` and `/akg:pull`.
 - **`/akg:pull`** never overwrites a local override without approval: it shows the conflict ("team says X, project says Y") and lets the user keep local, take team, or merge.
 - **Sync reminder.** A `SessionStart` hook gets the team's latest version (`git ls-remote` for a repo, download + hash for a remote file; ~2 s timeout) and compares it with `synced`. Silent when nothing changed or offline; otherwise one line: `akg: team config updated — /akg:pull`. Shown once per new team version (notification state per developer in `~/.cache/akg/`).
+- **Branch.** `extends: <source>#<ref>` pins a branch, tag or commit (Claude Code's own `owner/repo#ref` syntax). Each ref has its own cache; the reminder watches that ref; the team marketplace gets the same `ref`. Ignored, with a warning, on a single file.
 - **Remote single file** over HTTPS only, no auth in v1. Private team config → use a git repo (developer's git credentials).
 - **Empty team repo:** nothing is proposed for now.
 - **Scan first, ask last.** `/akg:setup` scans the project (manifests, README, docs, CI, tests, recent commits) before any question, pre-fills every answer it can infer (with its evidence), and shows **one** summary — stack, commands, layout, what it understood — to confirm or edit in free text. Every question is still asked, with the known answer as the first option: one click to confirm, or the developer goes further. Goal: minimal typing, full control.
