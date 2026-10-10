@@ -71,7 +71,7 @@ Ask **every active question**, whether or not its answer is already known — se
 
 Options written as placeholders (`<detected shortcut>`) are filled from the scan, as the question's `→` lines say. A question marked `multiple` is asked with checkboxes (`multiSelect: true`) instead, as rules.md says: its own options only, known values marked in their label, no "I don't know"; nothing checked is a valid answer. If its `→` lines turn it into a single choice (Local environment with nothing detected), still no "I don't know": store `[]` for "Nothing special".
 
-The tool adds "Other" for free text; interpret rough answers. A question with no fixed options (e.g. the DoD) gets 1–2 proposed versions built from the scan, the known one first.
+The tool adds "Other" for free text; interpret rough answers. A question with no fixed options (e.g. the DoD) gets 2 proposed versions built from the scan, the known one first.
 
 "I don't know" means: keep the team value if there is one, otherwise use the recommended option; it is a default, not an override, so nothing is written to the project `config.yaml` for it. Say which value was used in one line.
 

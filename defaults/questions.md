@@ -32,7 +32,7 @@ What kind of project is this? Its defaults apply to akg's own questions; a team 
 
 ## Definition of Done
 key: workflow.dod
-When is a change done? Propose 2–3 lists built from the context and the detected commands.
+When is a change done? Propose 2 lists built from the context and the detected commands.
 → CLAUDE.md: the checklist Claude must meet before saying a task is finished, with the real commands.
 
 ## TDD

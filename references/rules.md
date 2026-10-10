@@ -70,7 +70,7 @@ Always say why a plugin is proposed: "`react-conventions` — `package.json` dep
 
 ## Stored answers
 
-- Single choice: a short slug of the option (`Product in production` → `product`, `Ask first` → `ask`); yes/no questions → `true`/`false`; free text from "Other" is stored as typed.
+- Single choice: a short slug of the option, taken from the catalog's English label, never from the translated one (`Product in production` → `product`, `Ask first` → `ask`); yes/no questions → `true`/`false`; free text from "Other" is stored as typed.
 - `multiple`: a list of slugs (`[commit, push]`); nothing checked = `[]`. Dismissed: the team value, otherwise the options marked recommended, otherwise `[]` (for Claude autonomy: ask for everything).
 - Lists the user builds (Definition of Done) are stored as lists of short strings.
 
