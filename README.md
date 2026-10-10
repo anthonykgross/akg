@@ -2,7 +2,7 @@
 
 A Claude Code plugin that sets up Claude Code on a project from an optional **team config**, by asking a few questions about the project, then keeps it in sync with the team.
 
-- **Questions first**: project context, Definition of Done, TDD, review level, plus any question your team adds.
+- **Scans first, asks last**: reads the manifests, README, CI, tests and recent commits, then asks its questions (project context, Definition of Done, TDD, review level, ticket tracker, plus your team's) with the detected answer pre-selected: one click to confirm, or correct and go further.
 - **Detects, then confirms**: stack, test/lint/build commands, monorepo sub-projects.
 - **Shows what it understood**: purpose, key folders, architecture, integrations — and lets you add what matters ("edge functions are in `supabase/functions`", "we do DDD"). It lands in a `Project context` section of `CLAUDE.md` you own.
 - **Generates**: `CLAUDE.md` (one per sub-project in a monorepo), `.claude/settings.json`, and the plugins to enable.
@@ -91,7 +91,7 @@ marketplaces:             # extra marketplaces to draw plugins from
   - github:acme/frontend-plugins
 ```
 
-A value set here is not asked in `/akg:setup`; it is shown instead.
+A value set here is still asked in `/akg:setup`, pre-selected as "(Team)": the developer confirms or overrides it.
 
 ### `questions.md`
 

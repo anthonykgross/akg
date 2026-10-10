@@ -10,7 +10,7 @@ Format, for every layer (akg → team → project):
   - at the end of the question: applied whatever the answer.
   They can ask a follow-up question (with its own key), check something read-only (a command, an MCP server, a file),
   propose something (a line in CLAUDE.md, a plugin, a setting). They never install or modify anything by themselves.
-A question whose key is already set by a lower layer is not asked; its value is shown instead.
+Every question is asked. A known answer (team, project or detected) is offered first; "I don't know" is always offered last.
 -->
 
 ## Project context
@@ -53,11 +53,11 @@ key: tracker.tool
 Do you use a ticket tracker?
 - None (recommended)
 - Jira
-  → Ask its URL and the project key (keys: tracker.url, tracker.project).
+  → Ask its URL and the project key (keys: tracker.url, tracker.project): offer detected values as options, otherwise ask in one plain-text message.
   → Check whether an Atlassian/Jira MCP server is configured (`claude mcp list`) or a `jira` CLI is on the PATH; if neither, suggest one.
   → CLAUDE.md: reference tickets as <PROJECT>-123 in branch names and commit messages.
 - Linear
-  → Ask the team key (key: tracker.project).
+  → Ask the team key (key: tracker.project): offer a detected value as option, otherwise ask in one plain-text message.
   → Check whether a Linear MCP server is configured (`claude mcp list`); if not, suggest it.
   → CLAUDE.md: reference issues by their identifier in branch names and commit messages.
 - GitHub Issues
