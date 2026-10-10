@@ -1,6 +1,6 @@
 {
   "name": "akg",
-  "version": "0.10.11",
+  "version": "0.10.12",
   "description": "Set up Claude Code on a project from an optional team config, by asking questions, then keep it in sync with the team.",
   "author": { "name": "Anthony Gross" },
   "keywords": ["setup", "team", "config", "sync"]
