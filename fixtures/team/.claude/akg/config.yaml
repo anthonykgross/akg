@@ -1,4 +1,7 @@
 # Team config (fixture). The marketplace in this repo is used implicitly.
+
+# Questions to ask: workflow.*, the akg tracker question, and our own deploy question (overrides akg's).
+questions: [workflow, tracker, deploy]
 workflow:
   dod:
     - tests pass

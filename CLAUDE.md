@@ -39,6 +39,7 @@ Claude Code never reads it; akg generates native files from it.
 | `settings` | Raw fragment of Claude Code's `settings.json` (permissions, env, hooks…), deep-merged | `.claude/settings.json` |
 | `marketplaces` | Plugin marketplaces to draw plugins from | `extraKnownMarketplaces` |
 | `plugins.disabled` | Plugins refused for this project | — |
+| `questions` | Key prefixes of the questions to ask (`[workflow, tracker, deploy]`). Default: `workflow` + team/project-defined questions | — |
 | *question keys* | Answers, at the key each question declares (e.g. `workflow.tdd`, `deploy.target`) | `CLAUDE.md` |
 
 The project file contains only `extends`, `synced` and overrides: a key present there is an override.
@@ -49,7 +50,7 @@ Questions asked by `/akg:setup`, in Markdown, interpreted by Claude (rough answe
 - Same `##` title as a lower layer → replaces it. New title → added. Title followed by `skip` → removed.
 - `→` lines are free-text instructions for Claude: under an option, applied when it is chosen; at the end of the question, applied whatever the answer. They can ask a follow-up question (with its key), run a **read-only** check (command on PATH, MCP configured, file present) and propose something (a `CLAUDE.md` line, a plugin, a setting). They never install or modify anything: they come from a team repo, i.e. a third party.
 - Each question declares the `config.yaml` key its answer goes to (`key: deploy.target`). Base questions follow the same rule (`key: workflow.tdd`); `workflow` is not a special case.
-- Base questions: project context (POC, prod, lib…), DoD, TDD, review level. Optional questions come from upper layers.
+- akg ships a **catalog** (`defaults/questions.md`): `workflow.*` (context, DoD, TDD, review) on by default; `tracker`, `deploy`, `git.commits` off by default. `questions:` in `config.yaml` picks which to ask, by key prefix; the project list replaces the team list. No need to `skip` a question to turn it off.
 - **Every question is asked**, even when the answer is known. Options: the known answer first ("(Team)", "(Project)" or "(Detected)"), then the question's options, then **"I don't know"** (keeps the team value or the recommended option, as a default, not an override); "Other" for free text.
 
 ```markdown

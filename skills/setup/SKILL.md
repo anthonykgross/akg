@@ -38,7 +38,7 @@ Read before asking anything. Silently gather:
 - **Understanding**: README, docs, folder structure, entry points, config files (not every file).
 - **Signals for the questions**: README and docs, CI and deploy files (`Dockerfile`, `k8s/`, `serverless.yml`, `vercel.json`…), test folders and how many tests exist, the last ~50 commit messages (`git log --oneline -50`: ticket ids like `PROJ-123`, `#123`), issue/PR templates, links in the README (Jira, Linear…), an existing `CLAUDE.md`.
 
-Then **pre-fill every question** of the merged list (rules.md):
+Then **pre-fill every active question** of the merged list (rules.md: Active questions):
 - value set by the team or project config → that value, marked `team` / `project`;
 - otherwise, an answer you can infer from the scan → that value, with its evidence in a few words ("tests in `src/**/*.test.ts`, 40 files" → TDD yes; "commits reference `SHOP-123`" → Jira);
 - otherwise, no pre-fill.
@@ -62,7 +62,7 @@ The approved "Understood" bullets (plus the user's additions) become the **`## P
 
 ## 4. Questions, pre-filled
 
-Ask **every question**, whether or not its answer is already known — set by the team, by the project, or detected by the scan. The developer confirms in one click, or corrects / goes further. Use `AskUserQuestion`, batched by up to 4 (one tab per question; the `##` title, shortened to 12 chars, as the tab header). Each question has at most 4 options, in this order:
+Ask **every active question**, whether or not its answer is already known — set by the team, by the project, or detected by the scan. The developer confirms in one click, or corrects / goes further. Use `AskUserQuestion`, batched by up to 4 (one tab per question; the `##` title, shortened to 12 chars, as the tab header). Each question has at most 4 options, in this order:
 1. **The known answer, if any**, labelled "<answer> (Team)", "<answer> (Project)" or "<answer> (Detected)", with its source as description ("commits reference SHOP-123"). Add it as an option if it is not one of the question's own.
 2. **The question's other options**, recommended one first (the recommended one is first overall when nothing is known). Keep as many as fit.
 3. **"I don't know"** — always the last option.
