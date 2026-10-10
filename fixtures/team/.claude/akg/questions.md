@@ -3,8 +3,8 @@
 ## Review level
 key: workflow.review
 How thorough should Claude's self-review be? (team override)
-- Strict (recommended): diff, tests, lint, edge cases, security
-- Standard
+- Standard (recommended): re-read the diff, run tests and lint
+- Strict: standard, plus edge cases and security
 → Written in CLAUDE.md as the review step of the workflow.
 
 ## Deployment

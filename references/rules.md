@@ -47,7 +47,7 @@ For each plugin entry not in `plugins.disabled` and not already in `enabledPlugi
 
 | Signal | Check |
 |---|---|
-| `manifestDeps` | A project file whose path matches `file` (regex, case-insensitive) has content matching `pattern` (regex). Look at manifests only: `package.json`, `composer.json`, `pyproject.toml`, `requirements*.txt`, `go.mod`, `Cargo.toml`, `pom.xml`, `build.gradle*`, `Gemfile` — skip `node_modules/`, `vendor/`, `.git/`. |
+| `manifestDeps` | A project file whose **absolute** path matches `file` (regex, case-insensitive; `[/\\]package\.json$` must match a root `package.json`) has content matching `pattern` (regex). Look at manifests only: `package.json`, `composer.json`, `pyproject.toml`, `requirements*.txt`, `go.mod`, `Cargo.toml`, `pom.xml`, `build.gradle*`, `Gemfile` — skip `node_modules/`, `vendor/`, `.git/`. |
 | `filesRead` | A file matching the glob exists in the repo (same exclusions). |
 | `cwd` | The glob matches the project path. |
 | `cli` | The command name appears in a detected command (package scripts, `Makefile` targets, CI files). |
@@ -70,7 +70,7 @@ Always say why a plugin is proposed: "`react-conventions` — `package.json` dep
 
 ## Stored answers
 
-- Single choice: a short slug of the option, taken from the catalog's English label, never from the translated one (`Product in production` → `product`, `Ask first` → `ask`); yes/no questions → `true`/`false`; free text from "Other" is stored as typed.
+- Single choice: a short slug of the option, taken from the catalog's English label, never from the translated one (`Product in production` → `product`, `Ask first` → `ask`); yes/no questions → `true`/`false`; free text from "Other" is stored as typed. Follow-up values follow the same rule: a closed choice is a slug (`Cloud` → `cloud`, `Data Center` → `data-center`); a free value (URL, key, namespace) is stored as given.
 - `multiple`: a list of slugs (`[commit, push]`); nothing checked = `[]`. Dismissed: the team value, otherwise the options marked recommended, otherwise `[]` (for Claude autonomy: ask for everything).
 - Lists the user builds (Definition of Done) are stored as lists of short strings.
 
