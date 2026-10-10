@@ -94,6 +94,7 @@ Prepare, without writing yet:
 1. **`CLAUDE.md`** at the root from the `common` template — merged with the `frontend`/`backend` template when the project is a single one — including the approved `## Project context`; for each sub-project, `<folder>/CLAUDE.md` from its `frontend`/`backend` template. Templates are starting points: fill the placeholders with the confirmed commands and the answers, drop what doesn't apply, add what an answer requires (each question's `→` line says how). A `CLAUDE.md` line from an answer goes in the template section it fits best, otherwise under `## Rules`. Keep it short. If a `CLAUDE.md` already exists, propose a merged version that keeps the user's content.
 2. **`.claude/settings.json`**: merged `settings`, the settings derived from the answers (`→` Settings lines, plus `allow` for the confirmed test and lint commands, which Claude may always run), `extraKnownMarketplaces` and `enabledPlugins` (rules.md). Merge with the existing file; show conflicts.
 3. **`.claude/akg/config.yaml`**: only what rules.md lists for the project file, with `synced` set to the team `version` (no team → no `extends`, no `synced`).
+4. **Extra files an answer proposes** (e.g. `.gitignore` with `.env*`, from Secrets): reviewed like the others; merge with the existing file, never replace it.
 
 ## 7. Review and write
 

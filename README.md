@@ -5,7 +5,7 @@ A Claude Code plugin that sets up Claude Code on a project from an optional **te
 - **Scans first**: manifests, README, CI, tests and recent commits — stack, test/lint/build commands, monorepo sub-projects.
 - **Shows what it understood**: purpose, key folders, architecture, integrations — and lets you add what matters ("edge functions are in `supabase/functions`", "we do DDD"). It lands in a `Project context` section of `CLAUDE.md` you own.
 - **Asks every question, pre-filled**: project type, Definition of Done, TDD, review level, Claude autonomy (checkboxes), dependencies, where commands run (host or container), local tools and shortcuts, architecture, secrets, ticket tracker by default; deployment, branching, tests, migrations, docs… on demand; plus your team's. The known answer comes first — "(Team)", "(Project)" or "(Detected)" with its source — then the other options and "I don't know"; lists of independent items are checkboxes. One click to confirm, or correct and go further.
-- **Generates**: `CLAUDE.md` (one per sub-project in a monorepo), `.claude/settings.json`, and the plugins to enable.
+- **Generates**: `CLAUDE.md` (one per sub-project in a monorepo), `.claude/settings.json` (permissions from your answers, with `ask` on install commands and on destructive commands of detected tools such as `terraform apply`), and the plugins to enable.
 - **Speaks your language**: questions are asked in the language of the conversation; generated files stay in English unless you choose otherwise.
 - **Never imposes**: every file is shown before it is written; every value, setting and plugin is a proposal. Local choices always win over the team's.
 
