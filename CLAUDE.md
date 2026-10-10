@@ -101,7 +101,7 @@ Code convention **templates** (`common`, `backend`, `frontend`). Claude adapts t
 - Ask questions with the `AskUserQuestion` tool (selectable options, one tab per question, up to 4 per call), 2–4 options, recommended one first. Every option is a real answer: a free value (URL, path) is asked afterwards in one short plain-text message, never via an option meaning "type it in Other".
 - Never write files in the target project without showing the change and getting approval.
 - `allowed-tools` pre-approves only the scripts and the read-only commands the scan and checks use (`git log`, `git remote`, `which`, `claude mcp list`, `gh auth status`, `diff` for pull…), so setup runs without approval prompts.
-- Destructive commands of detected tools (`terraform apply/destroy`, `kubectl delete`…) always get an `ask` rule; install commands cover their common variants (`npm i`, `npm add`); an answer may propose an extra file (`.gitignore` with `.env*` and `!.env.example`), reviewed like the others. Ask/deny rules on a command use both forms, bare and with arguments.
+- Destructive commands of detected tools (`terraform apply/destroy`, `kubectl delete`…) always get an `ask` rule; install commands cover their common variants (`npm i`, `npm add`); an answer may propose an extra file (`.gitignore` with `.env*` and `!.env.example`), reviewed like the others. Destructive-command rules use both forms, bare and with arguments (`Bash(terraform apply)`, `Bash(terraform apply *)`); other rules use the argument form only, so a bare `npm install` stays free.
 - A question-level `→` line that only makes sense for some answers says so ("If a tracker is chosen: …").
 
 ## Repository layout
