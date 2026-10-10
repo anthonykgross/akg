@@ -2,7 +2,7 @@
 name: pull
 description: Pull team config updates into a project set up with akg, without overwriting local overrides. Shows what changed on the team side, surfaces conflicts with local overrides, proposes new questions and plugins. Use when the user runs /akg:pull or the akg session reminder says the team config was updated.
 disable-model-invocation: true
-allowed-tools: Bash(${CLAUDE_PLUGIN_ROOT}/scripts/fetch.sh *), Bash(${CLAUDE_PLUGIN_ROOT}/scripts/snapshot.sh *)
+allowed-tools: Bash(${CLAUDE_PLUGIN_ROOT}/scripts/fetch.sh *), Bash(${CLAUDE_PLUGIN_ROOT}/scripts/snapshot.sh *), Bash(git log *), Bash(git branch *), Bash(git remote *), Bash(git rev-parse *), Bash(which *), Bash(claude mcp list), Bash(gh auth status)
 ---
 
 # /akg:pull

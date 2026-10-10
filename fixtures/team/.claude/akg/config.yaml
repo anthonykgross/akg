@@ -13,4 +13,4 @@ workflow:
 settings:
   permissions:
     deny:
-      - "Read(.env*)"
+      - "Read(**/.env*)"

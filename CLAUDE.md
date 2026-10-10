@@ -98,6 +98,8 @@ Code convention **templates** (`common`, `backend`, `frontend`). Claude adapts t
 - Explain domain jargon (devops, secops…) in one sentence when it appears.
 - Ask questions with the `AskUserQuestion` tool (selectable options, one tab per question, up to 4 per call), 2–4 options, recommended one first. Every option is a real answer: a free value (URL, path) is asked afterwards in one short plain-text message, never via an option meaning "type it in Other".
 - Never write files in the target project without showing the change and getting approval.
+- `allowed-tools` pre-approves only the scripts and the read-only commands the scan and checks use (`git log`, `git remote`, `which`, `claude mcp list`, `gh auth status`…), so setup runs without approval prompts.
+- A question-level `→` line that only makes sense for some answers says so ("If a tracker is chosen: …").
 
 ## Repository layout
 

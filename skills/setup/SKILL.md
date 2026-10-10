@@ -2,7 +2,7 @@
 name: setup
 description: First-run setup of Claude Code on a project with akg. Links an optional team config, detects the stack and commands, asks the team/project questions, then proposes CLAUDE.md, .claude/settings.json and plugins. Use when the user runs /akg:setup or asks to set up Claude Code for this project with akg.
 disable-model-invocation: true
-allowed-tools: Bash(${CLAUDE_PLUGIN_ROOT}/scripts/fetch.sh *)
+allowed-tools: Bash(${CLAUDE_PLUGIN_ROOT}/scripts/fetch.sh *), Bash(git log *), Bash(git branch *), Bash(git remote *), Bash(git rev-parse *), Bash(which *), Bash(claude mcp list), Bash(gh auth status)
 ---
 
 # /akg:setup

@@ -16,4 +16,4 @@ Where is this project deployed?
 - Lambda
   → CLAUDE.md: keep handlers small, cold start matters.
 - None
-→ Add the deployment target to the Project context.
+→ If deployed: add the deployment target to the Project context.

@@ -106,7 +106,7 @@ Anything Claude should know to work on this project locally?
 - <detected task runner> (Detected)
 - Something to add
   → Ask in one plain-text message: CLIs, shortcuts, aliases and prerequisites (VPN, aws-vault, seed data…), and what each is for (key: env.notes).
-→ The options are built from the scan: up to 3 detected items (Makefile targets such as `make up` / `make shell`, project CLIs such as `bin/console`, `artisan`, `manage.py`, task runners such as `just` or a Taskfile), each labelled "(Detected)" with its source, then "Something to add". Nothing detected → single choice "Nothing special (recommended)" / "Something to add".
+→ The options are built from the scan: up to 3 detected items, excluding the test/lint/build/dev commands already confirmed (Makefile targets such as `make up` / `make shell`, project CLIs such as `bin/console`, `artisan`, `manage.py`, task runners such as `just` or a Taskfile), each labelled "(Detected)" with its source, then "Something to add". Nothing detected → single choice "Nothing special (recommended)" / "Something to add".
 → If the commands run in a container (env.runtime): ask the same for inside the container (tools available only there, how to open a shell, which service).
 → Check read-only that the CLIs mentioned are on the PATH (or in the container image definition); report missing ones in one line.
 → CLAUDE.md: a "## Local environment" section, one line per tool and when to use it. No settings.
@@ -124,7 +124,7 @@ How is the code organised?
 key: security.secrets
 Where do secrets live?
 - .env files, not committed (recommended)
-  → Settings: deny `Read(.env*)`. Check that `.env` is in `.gitignore`; report in one line.
+  → Settings: deny `Read(**/.env*)` (any folder, for monorepos). Check that `.env` is in `.gitignore`; report in one line.
 - Secret manager (Vault, AWS/GCP…)
   → Ask which one (key: security.manager): offer a detected value as option, otherwise ask in one plain-text message.
 - CI variables only
@@ -148,8 +148,8 @@ Where are tickets tracked?
   → CLAUDE.md: reference issues by their identifier in branch names and commit messages.
 → Pre-fill from the scan: ticket ids in recent commits and branch names, tracker links in the README, `.github/ISSUE_TEMPLATE/`.
 → Any other tool (GitLab, Azure DevOps, Trello…), given through "Other": ask in one plain-text message its URL and how tickets are referenced (keys: tracker.url, tracker.project); check whether its CLI is on the PATH (`glab`, `az`…).
-→ CLAUDE.md (shared, so conditional: access is per developer): "When given a ticket id and you can access the tracker (MCP server or CLI), read the ticket before starting."
-→ Add the tracker, its URL and project to the Project context.
+→ If a tracker is chosen — CLAUDE.md (shared, so conditional: access is per developer): "When given a ticket id and you can access the tracker (MCP server or CLI), read the ticket before starting."
+→ If a tracker is chosen: add it, its URL and project to the Project context.
 
 ## Deployment
 key: deploy.target
@@ -161,7 +161,7 @@ Where is this project deployed?
 - Serverless (Lambda, Vercel, Netlify, Supabase edge functions…)
   → CLAUDE.md: keep functions small; mind cold starts and timeouts.
 - Platform / VM (Heroku, Fly, bare servers…)
-→ Add the deployment target to the Project context.
+→ If deployed: add the deployment target to the Project context.
 
 ## Commit convention
 key: git.commits

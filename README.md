@@ -86,7 +86,7 @@ workflow:
 
 settings:                 # raw fragment of .claude/settings.json, deep-merged
   permissions:
-    deny: ["Read(.env*)"]
+    deny: ["Read(**/.env*)"]
 
 marketplaces:             # extra marketplaces to draw plugins from
   - github:acme/frontend-plugins
