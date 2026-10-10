@@ -87,9 +87,10 @@ Can Claude add dependencies?
 key: env.runtime
 Where are the project commands (tests, lint, build) run?
 - Inside a container (docker compose exec…) (recommended when a compose file defines services)
-- On the host
   → Detect the service names from the compose file; offer them as options, otherwise ask in one plain-text message (key: env.service).
-  → CLAUDE.md: run every project command as `docker compose exec <service> <command>`; use these forms in the commands list and the Definition of Done.
+  → CLAUDE.md: run the test, lint and build commands as `docker compose exec <service> <command>`; use these forms in the commands list and the Definition of Done. Not the dev server when compose already starts it (`command:` in the compose file).
+  → Settings: allow the container forms of the test and lint commands; ask for `Bash(docker compose down -v *)` (deletes volumes, i.e. local data).
+- On the host
 - Dev container (VS Code / devcontainer.json) (recommended when `.devcontainer/` exists)
   → CLAUDE.md: Claude runs inside the dev container; use the commands as they are.
 - Mixed
