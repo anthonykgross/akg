@@ -18,7 +18,7 @@ Same as `/akg:setup`: short messages in the user's language (generated files sta
 - Read `.claude/akg/config.yaml`. Missing → "Project not set up with akg: run `/akg:setup`." Stop.
 - No `extends` → "No team config configured." Stop.
 - Run `${CLAUDE_PLUGIN_ROOT}/scripts/fetch.sh <extends> <project root>`. On failure, say it in one line and stop.
-- `version` equals `synced` → "Up to date." Stop.
+- `version` equals `synced` → "Up to date." Stop. (New or newly relevant questions without a team change are picked up by re-running `/akg:setup`, which starts from the existing values.)
 
 ## 2. What changed on the team side
 
@@ -38,6 +38,7 @@ If nothing relevant changed (e.g. a commit touching only the team's README), upd
 | `questions` changed | — | No tab of its own: it only triggers the new questions below. |
 | Value removed | — | Nothing to do on generated files beyond what the user approves; akg never removes settings. Mention it in one line. |
 | New active question (new in the catalog/team list, or newly enabled by `questions`) whose key has no value | — | Ask it like `/akg:setup` step 4: known answer first ("(Team)" / "(Detected)"), then its options, then "I don't know" (checkboxes without "I don't know" if `multiple`). |
+| Active conditional question ("Ask only if …") whose condition now holds and whose key has no value (e.g. a `compose.yaml` appeared) | — | Ask it like a new question, saying what triggered it. |
 | Question replaced or removed | — | Ignore unless its key has no value. |
 | Template (`patterns/`) changed | — | Propose the equivalent targeted edit in the matching `CLAUDE.md` files (don't regenerate them: the user may have edited them). Never touch the `## Project context` section: it belongs to the developer. If the new convention contradicts the existing code (`export default` in `src/App.jsx` vs "named exports"), say so in one line; never change the code. |
 | New plugin or marketplace | — | Evaluate relevance (rules.md) and propose, `multiSelect`, with reasons and a last "None" option. None or empty selection = all declined; continue. |
