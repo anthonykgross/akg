@@ -113,10 +113,9 @@ fixtures/              # sandbox projects for manual testing
   extends-local-team/
   monorepo/
 README.md
-PRD.md
 ```
 
 ## Testing
 
 - Load: `claude --plugin-dir <repo>`; reload after edits: `/reload-plugins`; check: `claude plugin validate .`.
-- Replay each PRD user flow by hand on `fixtures/`. `claude plugin eval` later.
+- Replay each user flow by hand on `fixtures/`. `claude plugin eval` later.

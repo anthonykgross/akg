@@ -1,6 +1,6 @@
 # Fixtures
 
-Sandbox projects to replay each PRD user flow by hand.
+Sandbox projects to replay each user flow by hand.
 
 | Fixture | Stack | Team config | Checks |
 |---|---|---|---|

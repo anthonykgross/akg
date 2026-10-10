@@ -135,4 +135,4 @@ claude plugin validate .                    # check manifests
 fixtures/try.sh extends-local-team          # copy fixtures to a temp dir, print the command to run
 ```
 
-`fixtures/` holds sandbox projects (no team, extending a local team repo, monorepo) to replay each flow by hand; see [fixtures/README.md](fixtures/README.md). Design notes: [PRD.md](PRD.md).
+`fixtures/` holds sandbox projects (no team, extending a local team repo, monorepo) to replay each flow by hand; see [fixtures/README.md](fixtures/README.md).
