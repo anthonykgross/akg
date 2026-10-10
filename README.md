@@ -4,7 +4,7 @@ A Claude Code plugin that sets up Claude Code on a project from an optional **te
 
 - **Scans first**: manifests, README, CI, tests and recent commits — stack, test/lint/build commands, monorepo sub-projects.
 - **Shows what it understood**: purpose, key folders, architecture, integrations — and lets you add what matters ("edge functions are in `supabase/functions`", "we do DDD"). It lands in a `Project context` section of `CLAUDE.md` you own.
-- **Asks every question, pre-filled**: project context, Definition of Done, TDD, review level, Claude autonomy (checkboxes), dependencies, where commands run (host or container), local tools and shortcuts, architecture, secrets, ticket tracker by default; deployment, branching, tests, migrations, docs… on demand; plus your team's. The known answer comes first — "(Team)", "(Project)" or "(Detected)" with its source — then the other options and "I don't know". One click to confirm, or correct and go further.
+- **Asks every question, pre-filled**: project context, Definition of Done, TDD, review level, Claude autonomy (checkboxes), dependencies, where commands run (host or container), local tools and shortcuts, architecture, secrets, ticket tracker by default; deployment, branching, tests, migrations, docs… on demand; plus your team's. The known answer comes first — "(Team)", "(Project)" or "(Detected)" with its source — then the other options and "I don't know"; lists of independent items are checkboxes. One click to confirm, or correct and go further.
 - **Generates**: `CLAUDE.md` (one per sub-project in a monorepo), `.claude/settings.json`, and the plugins to enable.
 - **Never imposes**: every file is shown before it is written; every value, setting and plugin is a proposal. Local choices always win over the team's.
 
@@ -90,34 +90,42 @@ settings:                 # raw fragment of .claude/settings.json, deep-merged
 marketplaces:             # extra marketplaces to draw plugins from
   - github:acme/frontend-plugins
 
-questions: [workflow, tracker, deploy]   # which questions to ask, by key prefix
+questions: [workflow, deps, env, arch, security, tracker, deploy, flags, ops]   # which questions to ask, by key prefix
 ```
 
-`questions` picks from akg's catalog and your own questions: `workflow` (context, DoD, TDD, review, Claude autonomy), `deps`, `env` (host or container, local tools), `arch`, `security`, `tracker`, `deploy`, `git` (commits, branching, language), `tests`, `db`, `docs`. Without it, akg asks `workflow`, `deps`, `env`, `arch`, `security` and `tracker`, plus every question your team or project defines. The project list replaces the team's.
+`questions` picks from akg's catalog and your own questions: `workflow` (context, DoD, TDD, review, Claude autonomy), `deps`, `env` (host or container, local tools), `arch`, `security`, `tracker`, `deploy`, `git` (commits, branching, language), `tests`, `db`, `docs`. Without it, akg asks `workflow`, `deps`, `env`, `arch`, `security` and `tracker`, plus every question your team or project defines. A list replaces that default (list everything you want asked), and the project list replaces the team's.
 
 A value set here is still asked in `/akg:setup`, pre-selected as "(Team)": the developer confirms or overrides it.
 
 ### `questions.md`
 
-Example of a team question:
+Example: a team question of its own, a checkbox question, and an akg question removed.
 
 ```markdown
-## Ticket tracker
-key: tracker.tool
-Do you use a ticket tracker?
-- None (recommended)
-- Jira
-  → Ask its URL and project key (keys: tracker.url, tracker.project).
-  → Check whether a Jira MCP server or the `jira` CLI is available; if not, suggest one.
-  → CLAUDE.md: reference tickets as PROJ-123 in commits.
-→ Add the tracker to the Project context.
+## Feature flags
+key: flags.tool
+How are new features toggled?
+- Unleash (recommended)
+  → Ask the Unleash URL (key: flags.url), in plain text unless found in the code.
+  → CLAUDE.md: put every new user-facing feature behind an Unleash flag.
+- None
+→ Add it to the Project context.
+
+## Observability
+key: ops.observability
+multiple
+What must every new endpoint have?
+- Structured logs
+- Metrics
+- Tracing spans
+→ CLAUDE.md: one line per checked item.
 
 ## TDD
 skip
 ```
 
 - `## Title` identifies a question: the same title replaces the akg (or team) one, `skip` removes it, a new title adds it.
-- `multiple` (optional, after `key`) asks with checkboxes instead of a single choice; the answer is a list.
+- `multiple` (optional, after `key`) asks with checkboxes instead of a single choice (max 4 options); the answer is a list, nothing checked is a valid answer.
 - `key` is where the answer is stored in `config.yaml`. Required: a question without `key` is ignored, with a one-line warning.
 - `→` lines are instructions for Claude: under an option, applied when it is chosen; at the end, applied whatever the answer. They can ask a follow-up question, run a read-only check, or propose a `CLAUDE.md` line, a plugin or a setting — never install or change anything by themselves.
 

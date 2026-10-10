@@ -51,8 +51,9 @@ Questions asked by `/akg:setup`, in Markdown, interpreted by Claude (rough answe
 - `→` lines are free-text instructions for Claude: under an option, applied when it is chosen; at the end of the question, applied whatever the answer. They can ask a follow-up question (with its key), run a **read-only** check (command on PATH, MCP configured, file present) and propose something (a `CLAUDE.md` line, a plugin, a setting). They never install or modify anything: they come from a team repo, i.e. a third party.
 - Each question declares the `config.yaml` key its answer goes to (`key: deploy.target`). Base questions follow the same rule (`key: workflow.tdd`); `workflow` is not a special case. A question without `key:` is ignored, with a one-line warning (`akg: question "<Title>" ignored — no key`).
 - akg ships a **catalog** (`defaults/questions.md`): on by default: `workflow.*` (context, DoD, TDD, review, Claude autonomy), `deps.policy`, `env.runtime` (only when a container setup is detected), `env.tools`, `arch.style`, `security.secrets`, `tracker.tool`; off by default: `deploy`, `git.commits`, `git.branching`, `git.language`, `tests.levels`, `db.migrations`, `docs.policy`. `questions:` in `config.yaml` picks which to ask, by key prefix; the project list replaces the team list. No need to `skip` a question to turn it off.
-- `multiple` (line after `key:`) turns a question into checkboxes for independent options (max 4, e.g. Claude autonomy, docs); a question picking a level or one tool stays single choice: the answer is a list, nothing checked is a valid answer, no "I don't know".
-- **Every question is asked**, even when the answer is known. Options: the known answer first ("(Team)", "(Project)" or "(Detected)"), then the question's options, then **"I don't know"** (keeps the team value or the recommended option, as a default, not an override); "Other" for free text.
+- `multiple` (line after `key:`) turns a question into checkboxes for independent options (max 4, e.g. Claude autonomy, docs): the answer is a list, nothing checked is a valid answer, no "I don't know". A question picking a level or one tool stays single choice.
+- Options can be built from the scan when the question says so (e.g. Local environment: `<detected shortcut> (Detected)` placeholders, filled from the Makefile, project CLIs, task runners).
+- **Every question is asked**, even when the answer is known. Options (single choice): the known answer first ("(Team)", "(Project)" or "(Detected)"), then the question's options, then **"I don't know"** (keeps the team value or the recommended option, as a default, not an override); "Other" for free text.
 
 ```markdown
 ## Deployment
@@ -69,7 +70,7 @@ Code convention **templates** (`common`, `backend`, `frontend`). Claude adapts t
 
 ## Design decisions
 
-- **Three layers: akg → team → project.** The layer closest to the project wins, for every file (`config.yaml`, `questions.md`, `patterns/`). akg ships minimal base questions and templates.
+- **Three layers: akg → team → project.** The layer closest to the project wins, for every file (`config.yaml`, `questions.md`, `patterns/`). akg ships a question catalog and minimal templates.
 - **The team config is optional.** Without `extends`, `/akg:setup` works the same; `/akg:pull` and the session hook do nothing.
 - **Nothing is imposed.** Config, settings, marketplaces and plugins are always proposed and approved by the user.
 - **Team repo = a standard Claude Code plugin marketplace** (`.claude-plugin/marketplace.json`) plus `.claude/akg/`. Skills, hooks, agents and MCP servers are distributed as regular plugins; akg does not reinvent distribution, and plugins stay usable without akg.
@@ -96,7 +97,7 @@ Code convention **templates** (`common`, `backend`, `frontend`). Claude adapts t
 - Ask questions with the `AskUserQuestion` tool (selectable options, one tab per question, up to 4 per call), 2–4 options, recommended one first. Every option is a real answer: a free value (URL, path) is asked afterwards in one short plain-text message, never via an option meaning "type it in Other".
 - Never write files in the target project without showing the change and getting approval.
 
-## Repository layout (planned)
+## Repository layout
 
 The repo is both the plugin and its own marketplace (plugin name `akg`; names must not start with `claude-`).
 
@@ -119,6 +120,8 @@ fixtures/              # sandbox projects for manual testing
   no-team/
   extends-local-team/
   monorepo/
+  team/                # local team repo (marketplace + .claude/akg/)
+  try.sh               # copy fixtures to a temp dir, print the command to run
 README.md
 ```
 

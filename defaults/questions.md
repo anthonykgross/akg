@@ -14,7 +14,8 @@ Format, for every layer (akg → team → project):
   propose something (a line in CLAUDE.md, a plugin, a setting). They never install or modify anything by themselves.
 Which questions are asked is set by `questions:` in config.yaml (a list of key prefixes, e.g. [workflow, tracker]).
 Without it: `workflow`, `deps`, `env`, `arch`, `security`, `tracker` + every question defined in the team/project questions.md. The rest of this catalog is off by default.
-Every active question is asked. A known answer (team, project or detected) is offered first; "I don't know" is always offered last.
+- Options written as placeholders (`<detected …>`) are built from the project scan.
+Every active question is asked. A known answer (team, project or detected) is offered first; "I don't know" is offered last (single choice only).
 -->
 
 ## Project context
