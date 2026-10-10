@@ -44,7 +44,7 @@ If nothing relevant changed (e.g. a commit touching only the team's README), upd
 
 Group changes and conflicts in `AskUserQuestion` calls of up to 4 tabs, then new questions, then plugins. Recompute derived settings only for answers that changed (team value taken, new question answered).
 
-**Refusing a team change makes it a local override**: if the user declines a non-overridden value, write the current value into the project `config.yaml`; a declined plugin goes to `plugins.disabled`. That way it is not proposed again. A declined list addition in `settings` (a new `deny` rule) or template change is simply not applied: nothing records it, and it is not proposed again because `synced` moves to the new version (only the no-snapshot fallback could show it again).
+**Refusing a team change makes it a local override**: if the user declines a non-overridden value, write the current value into the project `config.yaml` (a list answer such as the DoD is written in full: it replaces the team list); a declined plugin goes to `plugins.disabled`. That way it is not proposed again. A declined list addition in `settings` (a new `deny` rule) or template change is simply not applied: nothing records it, and it is not proposed again because `synced` moves to the new version (only the no-snapshot fallback could show it again).
 
 ## 4. Review and write
 

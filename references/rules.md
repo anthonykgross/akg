@@ -12,7 +12,7 @@ Shared by `/akg:setup` and `/akg:pull`. Paths: `<plugin>` = `${CLAUDE_PLUGIN_ROO
 
 The layer closest to the project wins. A missing file in a layer is not an error.
 
-- **`config.yaml`**: deep merge, project over team. A key present in the project file is an override.
+- **`config.yaml`**: deep merge, project over team. A key present in the project file is an override. Answer lists (`workflow.dod`, `workflow.autonomy`…) are replaced as a whole by the project's list; only arrays inside `settings` are concatenated.
 - **Active questions** (`questions` in the merged config, a list of key prefixes): a question is active if its `key` equals an entry or starts with `<entry>.` (`workflow` → `workflow.*`). Without `questions`: `workflow`, `deps`, `env`, `arch`, `security` and `tracker`, plus every question defined in the team or project `questions.md`; the rest of the akg catalog is off. Like any key, the project list replaces the team list. Follow-up questions (asked by `→` instructions) follow their parent and are never listed.
 - **Recommendations**: a question's own "(recommended)" comes from the layer that defines it. Defaults set by another answer (Project type) only apply to akg's catalog questions; a team or project question keeps its recommendation.
 - **Questions without `key:`** are ignored: never asked, nothing stored. Say it once per question, in one line: `akg: question "<Title>" ignored — no key`.

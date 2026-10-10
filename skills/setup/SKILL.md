@@ -73,7 +73,7 @@ Options written as placeholders (`<detected shortcut>`) are filled from the scan
 
 The tool adds "Other" for free text; interpret rough answers. A question with no fixed options (e.g. the DoD) gets 2 proposed versions built from the scan, the known one first.
 
-"I don't know" means: keep the team value if there is one, otherwise use the recommended option; it is a default, not an override, so nothing is written to the project `config.yaml` for it. Say which value was used in one line.
+"I don't know" means: keep the team value if there is one, otherwise use the recommended option. When the team sets the key, it is a default, not an override: nothing is written to the project `config.yaml`. When no team value exists, store the recommended value with a comment (`commits: conventional  # I don't know → recommended`), otherwise `/akg:pull` would ask again. Say which value was used in one line.
 
 For **every** answer, store it at its `key` (format in rules.md), then apply its `→` instructions (rules.md): those under the chosen option, then the question-level ones. Follow-up questions they request (e.g. the Jira URL and project key):
 - **every value detected by the scan** (URL in the README, `SHOP` from commits `SHOP-123`) → `AskUserQuestion` with the detected value(s) as real options ("SHOP (Detected)"), plus "I don't know";
