@@ -47,20 +47,3 @@ How thorough should Claude's self-review be before handing over?
   → CLAUDE.md: run the tests before handing over.
 - Strict
   → CLAUDE.md: standard review, plus a pass on edge cases, security and performance.
-
-## Ticket tracker
-key: tracker.tool
-Do you use a ticket tracker?
-- None (recommended)
-- Jira
-  → Ask its URL and the project key (keys: tracker.url, tracker.project): offer detected values as options, otherwise ask in one plain-text message.
-  → Check whether an Atlassian/Jira MCP server is configured (`claude mcp list`) or a `jira` CLI is on the PATH; if neither, suggest one.
-  → CLAUDE.md: reference tickets as <PROJECT>-123 in branch names and commit messages.
-- Linear
-  → Ask the team key (key: tracker.project): offer a detected value as option, otherwise ask in one plain-text message.
-  → Check whether a Linear MCP server is configured (`claude mcp list`); if not, suggest it.
-  → CLAUDE.md: reference issues by their identifier in branch names and commit messages.
-- GitHub Issues
-  → Check whether the `gh` CLI is on the PATH and authenticated (`gh auth status`); if not, suggest it.
-  → CLAUDE.md: reference issues as #123 in commit messages.
-→ Add the tracker (and URL if any) to the Project context.
