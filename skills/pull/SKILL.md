@@ -2,7 +2,7 @@
 name: pull
 description: Pull team config updates into a project set up with akg, without overwriting local overrides. Shows what changed on the team side, surfaces conflicts with local overrides, proposes new questions and plugins. Use when the user runs /akg:pull or the akg session reminder says the team config was updated.
 disable-model-invocation: true
-allowed-tools: Bash(${CLAUDE_PLUGIN_ROOT}/scripts/fetch.sh *), Bash(${CLAUDE_PLUGIN_ROOT}/scripts/snapshot.sh *), Bash(git log *), Bash(git branch *), Bash(git remote *), Bash(git rev-parse *), Bash(which *), Bash(claude mcp list), Bash(gh auth status)
+allowed-tools: Bash(${CLAUDE_PLUGIN_ROOT}/scripts/fetch.sh *), Bash(${CLAUDE_PLUGIN_ROOT}/scripts/snapshot.sh *), Bash(diff *), Bash(git log *), Bash(git branch *), Bash(git remote *), Bash(git rev-parse *), Bash(which *), Bash(claude mcp list), Bash(gh auth status)
 ---
 
 # /akg:pull
@@ -24,7 +24,7 @@ Same as `/akg:setup`: short messages in the user's language (generated files sta
 
 Run `${CLAUDE_PLUGIN_ROOT}/scripts/snapshot.sh <kind> <path> <synced>` to get the team config as it was at the last sync.
 
-- **Snapshot available**: compare old vs new team `config.yaml`, `questions.md`, `patterns/` and `.claude-plugin/marketplace.json`. Only what differs is a change.
+- **Snapshot available**: compare old vs new team (`diff -ru <snapshot> <path>` on `.claude/akg` and `.claude-plugin` gives the list in one call) `config.yaml`, `questions.md`, `patterns/` and `.claude-plugin/marketplace.json`. Only what differs is a change.
 - **Snapshot unavailable** (no history): compare the current team config with the project's current state instead. Don't raise override conflicts in this mode; just list kept overrides in one line ("Kept local: `workflow.tdd: false` (team: true)").
 
 If nothing relevant changed (e.g. a commit touching only the team's README), update `synced` after approval and stop.
