@@ -42,7 +42,7 @@ Claude Code never reads it; akg generates native files from it.
 | `questions` | Key prefixes of the questions to ask (`[workflow, tracker, deploy]`). Default: `workflow`, `deps`, `env`, `arch`, `security`, `tracker` + team/project-defined questions | — |
 | *question keys* | Answers, at the key each question declares (e.g. `workflow.tdd`, `deploy.target`) | `CLAUDE.md` |
 
-The project file contains only `extends`, `synced` and overrides: a key present there is an override.
+The project file contains only `extends`, `synced` and overrides: a key present there is an override (including answers to keys the team does not set).
 
 ### `questions.md`
 

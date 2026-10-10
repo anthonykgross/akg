@@ -76,4 +76,4 @@ Always say why a plugin is proposed: "`react-conventions` — `package.json` dep
 
 ## Project `config.yaml` written by akg
 
-Only: `extends`, `synced`, values that differ from the team (or all answers when there is no team), local `marketplaces` additions, `plugins.disabled` (including plugins the user refused). Comment overrides briefly when the reason is known (`tdd: false  # POC`).
+Only: `extends`, `synced`, values that differ from the team — including answers to keys the team does not set (otherwise the question comes back on every pull) — (or all answers when there is no team), local `marketplaces` additions, `plugins.disabled` (including plugins the user refused). Comment overrides briefly when the reason is known (`tdd: false  # POC`).
