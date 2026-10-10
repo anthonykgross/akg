@@ -50,6 +50,6 @@ Group changes and conflicts in `AskUserQuestion` calls of up to 4 tabs, then new
 
 Prepare the updated files: the affected `CLAUDE.md` files (targeted edits), `.claude/settings.json` (deep merge, rules.md), `.claude/akg/config.yaml` (new overrides, `synced: <version>`).
 
-For each file, ask with `AskUserQuestion`: "Write (Recommended)" / "Edit" / "Skip", with the diff in the `preview` of "Write". Write only what is approved. Always update `synced`, even if every change was declined (they are now overrides).
+For each file, ask with `AskUserQuestion`: "Write (Recommended)" / "Edit" / "Skip", with the diff in the `preview` of "Write". Write only what is approved. Always update `synced` in the `config.yaml` proposal, even if every change was declined (they are now overrides). If the user skips `config.yaml`, nothing is written there: `synced` stays behind, so say in one line that the reminder and these changes will come back.
 
 End with at most 3 lines: what changed, install commands for any external-source plugin, and "commit `.claude/` so teammates don't get the reminder again".
