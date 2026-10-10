@@ -76,8 +76,8 @@ The tool adds "Other" for free text; interpret rough answers. A question with no
 "I don't know" means: keep the team value if there is one, otherwise use the recommended option; it is a default, not an override, so nothing is written to the project `config.yaml` for it. Say which value was used in one line.
 
 For **every** answer, store it at its `key` (format in rules.md), then apply its `→` instructions (rules.md): those under the chosen option, then the question-level ones. Follow-up questions they request (e.g. the Jira URL and project key):
-- **value detected by the scan** (URL in the README, `SHOP` from commits `SHOP-123`) → `AskUserQuestion` with the detected value(s) as real options ("SHOP (Detected)"), plus "I don't know";
-- **nothing detected** → ask in **one plain-text message** ("Jira URL and project key?") and wait for the reply. Never an `AskUserQuestion` whose option means "type it in Other". Several free values for the same tool go in the same message. Keep checks read-only and report each result in one line ("Jira MCP: not configured — suggested"); collect the proposed `CLAUDE.md` lines, plugins and settings for step 6.
+- **every value detected by the scan** (URL in the README, `SHOP` from commits `SHOP-123`) → `AskUserQuestion` with the detected value(s) as real options ("SHOP (Detected)"), plus "I don't know";
+- **at least one value missing** → ask **all** of that tool's values in **one plain-text message**, showing the detected ones as defaults ("SHOP detected. Jira site URL? Cloud or Data Center?"), and wait for the reply. Never an `AskUserQuestion` whose option means "type it in Other". Several free values for the same tool go in the same message. Keep checks read-only and report each result in one line ("Jira MCP: not configured — suggested"); collect the proposed `CLAUDE.md` lines, plugins and settings for step 6.
 
 ## 5. Plugins
 

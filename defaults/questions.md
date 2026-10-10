@@ -20,7 +20,7 @@ Every active question is asked. A known answer (team, project or detected) is of
 
 ## Project type
 key: workflow.type
-What kind of project is this?
+What kind of project is this? Its defaults apply to akg's own questions; a team or project question keeps its own recommendation.
 - Product in production (recommended)
   → Defaults for the next questions: full DoD, TDD, standard review.
 - POC / prototype
@@ -67,7 +67,8 @@ What can Claude do without asking first? Editing files and running tests/lint is
   → CLAUDE.md: "You may run migrations on the local database only."
 - Delete files
   → CLAUDE.md: "You may delete files that your change makes obsolete; list them in your summary."
-→ For each unchecked action: CLAUDE.md "Ask before <action>"; settings: ask for its command when there is one.
+  → Settings: allow `Bash(rm *)`.
+→ For each unchecked action: CLAUDE.md "Ask before <action>"; settings: ask for its command — commit `Bash(git commit *)`, push `Bash(git push *)`, delete `Bash(rm *)`; migrations have no generic command.
 → Whatever the answer: settings: deny `Bash(git push --force *)` and `Bash(git push * main)` (use the detected default branch).
 
 ## Dependencies
@@ -147,7 +148,7 @@ Where are tickets tracked?
   → CLAUDE.md: reference issues by their identifier in branch names and commit messages.
 → Pre-fill from the scan: ticket ids in recent commits and branch names, tracker links in the README, `.github/ISSUE_TEMPLATE/`.
 → Any other tool (GitLab, Azure DevOps, Trello…), given through "Other": ask in one plain-text message its URL and how tickets are referenced (keys: tracker.url, tracker.project); check whether its CLI is on the PATH (`glab`, `az`…).
-→ If Claude can read the tracker (MCP server or CLI available): CLAUDE.md "When given a ticket id, read the ticket before starting."
+→ CLAUDE.md (shared, so conditional: access is per developer): "When given a ticket id and you can access the tracker (MCP server or CLI), read the ticket before starting."
 → Add the tracker, its URL and project to the Project context.
 
 ## Deployment
