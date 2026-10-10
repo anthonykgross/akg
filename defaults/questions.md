@@ -6,13 +6,14 @@ Format, for every layer (akg → team → project):
 - `key:` is where the answer is stored in `.claude/akg/config.yaml`. Required: a question without `key:` is ignored (with a one-line warning).
 - Options are suggestions; rough free-text answers are fine.
 - `multiple` (line after `key:`): checkboxes instead of a single choice, for independent options (max 4). The answer is a list; nothing checked = empty list.
+  Use it for a list of independent actions or items; a question picking a level or one tool (strict/permissive, Jira/Linear) stays single choice.
 - `→` lines are free-text instructions for Claude:
   - under an option: applied only when that option is chosen;
   - at the end of the question: applied whatever the answer.
   They can ask a follow-up question (with its own key), check something read-only (a command, an MCP server, a file),
   propose something (a line in CLAUDE.md, a plugin, a setting). They never install or modify anything by themselves.
 Which questions are asked is set by `questions:` in config.yaml (a list of key prefixes, e.g. [workflow, tracker]).
-Without it: `workflow`, `arch`, `security` + every question defined in the team/project questions.md. The rest of this catalog is off by default.
+Without it: `workflow`, `deps`, `env`, `arch`, `security` + every question defined in the team/project questions.md. The rest of this catalog is off by default.
 Every active question is asked. A known answer (team, project or detected) is offered first; "I don't know" is always offered last.
 -->
 
@@ -61,13 +62,38 @@ What can Claude do without asking first? Editing files and running tests/lint is
 - Push feature branches
   → CLAUDE.md: "Push feature branches freely, never the default branch."
   → Settings: allow `Bash(git push *)`.
-- Add dependencies
-  → CLAUDE.md: "You may add a dependency when justified; say which and why in your summary."
-  → Settings: allow the install command of the detected package manager (e.g. `Bash(npm install *)`).
-- Run migrations
+- Run migrations (local database only)
   → CLAUDE.md: "You may run migrations on the local database only."
-→ For each unchecked action: CLAUDE.md "Ask before <action>"; settings: ask for its command.
-→ Whatever the answer: CLAUDE.md "Ask before deleting files. Prefer the standard library and existing dependencies." Settings: deny `Bash(git push --force *)` and `Bash(git push * main)` (use the detected default branch).
+- Delete files
+  → CLAUDE.md: "You may delete files that your change makes obsolete; list them in your summary."
+→ For each unchecked action: CLAUDE.md "Ask before <action>"; settings: ask for its command when there is one.
+→ Whatever the answer: settings: deny `Bash(git push --force *)` and `Bash(git push * main)` (use the detected default branch).
+
+## Dependencies
+key: deps.policy
+Can Claude add dependencies?
+- Ask first (recommended)
+  → CLAUDE.md: "Never add a dependency without asking. Prefer the standard library and existing dependencies."
+  → Settings: ask for the install command of the detected package manager (e.g. `Bash(npm install *)`).
+- Free, if justified
+  → CLAUDE.md: "You may add a dependency when justified; say which and why in your summary."
+- Forbidden
+  → CLAUDE.md: "Never add dependencies."
+  → Settings: deny the install command of the detected package manager.
+
+## Command environment
+key: env.runtime
+Where are the project commands (tests, lint, build) run?
+- On the host (recommended when no container setup is detected)
+- Inside a container (docker compose exec…)
+  → Detect the service names from the compose file; offer them as options, otherwise ask in one plain-text message (key: env.service).
+  → CLAUDE.md: run every project command as `docker compose exec <service> <command>`; use these forms in the commands list and the Definition of Done.
+- Dev container (VS Code / devcontainer.json)
+  → CLAUDE.md: Claude runs inside the dev container; use the commands as they are.
+- Mixed
+  → Ask in one plain-text message which commands run where; CLAUDE.md: one line per command.
+→ Ask only if a container setup is detected (`Dockerfile`, `compose.yaml` / `docker-compose.yml`, `.devcontainer/`); otherwise skip it silently.
+→ Pre-fill from how the README, Makefile or scripts run the commands (e.g. a `make test` target calling `docker compose exec`).
 
 ## Architecture
 key: arch.style
