@@ -4,8 +4,9 @@ A Claude Code plugin that sets up Claude Code on a project from an optional **te
 
 - **Scans first**: manifests, README, CI, tests and recent commits — stack, test/lint/build commands, monorepo sub-projects.
 - **Shows what it understood**: purpose, key folders, architecture, integrations — and lets you add what matters ("edge functions are in `supabase/functions`", "we do DDD"). It lands in a `Project context` section of `CLAUDE.md` you own.
-- **Asks every question, pre-filled**: project context, Definition of Done, TDD, review level, Claude autonomy (checkboxes), dependencies, where commands run (host or container), local tools and shortcuts, architecture, secrets, ticket tracker by default; deployment, branching, tests, migrations, docs… on demand; plus your team's. The known answer comes first — "(Team)", "(Project)" or "(Detected)" with its source — then the other options and "I don't know"; lists of independent items are checkboxes. One click to confirm, or correct and go further.
+- **Asks every question, pre-filled**: project type, Definition of Done, TDD, review level, Claude autonomy (checkboxes), dependencies, where commands run (host or container), local tools and shortcuts, architecture, secrets, ticket tracker by default; deployment, branching, tests, migrations, docs… on demand; plus your team's. The known answer comes first — "(Team)", "(Project)" or "(Detected)" with its source — then the other options and "I don't know"; lists of independent items are checkboxes. One click to confirm, or correct and go further.
 - **Generates**: `CLAUDE.md` (one per sub-project in a monorepo), `.claude/settings.json`, and the plugins to enable.
+- **Speaks your language**: questions are asked in the language of the conversation; generated files stay in English unless you choose otherwise.
 - **Never imposes**: every file is shown before it is written; every value, setting and plugin is a proposal. Local choices always win over the team's.
 
 ## Install
@@ -93,7 +94,7 @@ marketplaces:             # extra marketplaces to draw plugins from
 questions: [workflow, deps, env, arch, security, tracker, deploy, flags, ops]   # which questions to ask, by key prefix
 ```
 
-`questions` picks from akg's catalog and your own questions: `workflow` (context, DoD, TDD, review, Claude autonomy), `deps`, `env` (host or container, local tools), `arch`, `security`, `tracker`, `deploy`, `git` (commits, branching, language), `tests`, `db`, `docs`. Without it, akg asks `workflow`, `deps`, `env`, `arch`, `security` and `tracker`, plus every question your team or project defines. A list replaces that default (list everything you want asked), and the project list replaces the team's.
+`questions` picks from akg's catalog and your own questions: `workflow` (project type, DoD, TDD, review, Claude autonomy), `deps`, `env` (host or container, local tools), `arch`, `security`, `tracker`, `deploy`, `git` (commits, branching, language), `tests`, `db`, `docs`. Without it, akg asks `workflow`, `deps`, `env`, `arch`, `security` and `tracker`, plus every question your team or project defines. A list replaces that default (list everything you want asked), and the project list replaces the team's.
 
 A value set here is still asked in `/akg:setup`, pre-selected as "(Team)": the developer confirms or overrides it.
 

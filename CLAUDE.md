@@ -50,9 +50,10 @@ Questions asked by `/akg:setup`, in Markdown, interpreted by Claude (rough answe
 - Same `##` title as a lower layer → replaces it. New title → added. Title followed by `skip` → removed.
 - `→` lines are free-text instructions for Claude: under an option, applied when it is chosen; at the end of the question, applied whatever the answer. They can ask a follow-up question (with its key), run a **read-only** check (command on PATH, MCP configured, file present) and propose something (a `CLAUDE.md` line, a plugin, a setting). They never install or modify anything: they come from a team repo, i.e. a third party.
 - Each question declares the `config.yaml` key its answer goes to (`key: deploy.target`). Base questions follow the same rule (`key: workflow.tdd`); `workflow` is not a special case. A question without `key:` is ignored, with a one-line warning (`akg: question "<Title>" ignored — no key`).
-- akg ships a **catalog** (`defaults/questions.md`): on by default: `workflow.*` (context, DoD, TDD, review, Claude autonomy), `deps.policy`, `env.runtime` (only when a container setup is detected), `env.tools`, `arch.style`, `security.secrets`, `tracker.tool`; off by default: `deploy`, `git.commits`, `git.branching`, `git.language`, `tests.levels`, `db.migrations`, `docs.policy`. `questions:` in `config.yaml` picks which to ask, by key prefix; the project list replaces the team list. No need to `skip` a question to turn it off.
+- akg ships a **catalog** (`defaults/questions.md`): on by default: `workflow.*` (project type, DoD, TDD, review, Claude autonomy), `deps.policy`, `env.runtime` (only when a container setup is detected), `env.tools`, `arch.style`, `security.secrets`, `tracker.tool`; off by default: `deploy`, `git.commits`, `git.branching`, `git.language`, `tests.levels`, `db.migrations`, `docs.policy`. `questions:` in `config.yaml` picks which to ask, by key prefix; the project list replaces the team list. No need to `skip` a question to turn it off.
 - `multiple` (line after `key:`) turns a question into checkboxes for independent options (max 4, e.g. Claude autonomy, docs): the answer is a list, nothing checked is a valid answer, no "I don't know". A question picking a level or one tool stays single choice.
 - Options can be built from the scan when the question says so (e.g. Local environment: `<detected shortcut> (Detected)` placeholders, filled from the Makefile, project CLIs, task runners).
+- A question whose answer sets defaults for others (Project type) is asked alone, first. With more than 4 options, the ones the scan makes unlikely are dropped first (still reachable through "Other").
 - **Every question is asked**, even when the answer is known. Options (single choice): the known answer first ("(Team)", "(Project)" or "(Detected)"), then the question's options, then **"I don't know"** (keeps the team value or the recommended option, as a default, not an override); "Other" for free text.
 
 ```markdown
@@ -76,7 +77,7 @@ Code convention **templates** (`common`, `backend`, `frontend`). Claude adapts t
 - **Team repo = a standard Claude Code plugin marketplace** (`.claude-plugin/marketplace.json`) plus `.claude/akg/`. Skills, hooks, agents and MCP servers are distributed as regular plugins; akg does not reinvent distribution, and plugins stay usable without akg.
 - **Plugins are enabled, not copied** (`enabledPlugins`). akg evaluates the `relevance` blocks of `marketplace.json` itself: a plugin with `relevance` is proposed only when its signals match the project; a plugin without `relevance` is proposed on every project. No marketplace → no plugin proposed. akg says why each plugin is proposed.
 - **`relevance` at setup time uses fixed rules**, never free judgement: `manifestDeps` → regex on the project's manifests; `filesRead` → matching files exist in the repo; `cwd` → glob on the project path; `cli` → command name appears in detected commands; `hosts` → ignored.
-- **Settings merge.** Deep merge into `.claude/settings.json`: objects key by key, arrays concatenated and deduplicated; a differing scalar is shown as a conflict. akg never removes anything.
+- **Settings merge.** Deep merge into `.claude/settings.json`: objects key by key, arrays concatenated and deduplicated; a differing scalar is shown as a conflict. akg never removes anything. Settings derived from answers (`→ Settings:` lines) are not stored: they are recomputed from the answers at setup and pull.
 - **Plugins from an external repo** must be installed once per developer; akg gives the exact install command when proposing them.
 - **Stack and commands** (test, lint, build) are **detected, then always shown for confirmation or edit**. Prefer commands already declared in the project (`package.json` scripts, `Makefile` targets…); never invent elaborate ones.
 - **Team cache** in `~/.cache/akg/`, refreshed on each `/akg:setup` and `/akg:pull`.
@@ -93,6 +94,7 @@ Code convention **templates** (`common`, `backend`, `frontend`). Claude adapts t
 ## Skill writing guidelines
 
 - Keep output short. The target user is a senior dev who dislikes ceremony.
+- Talk in the user's language: the catalog is in English, Claude translates questions and options; generated files stay in English unless the Language answer says otherwise.
 - Explain domain jargon (devops, secops…) in one sentence when it appears.
 - Ask questions with the `AskUserQuestion` tool (selectable options, one tab per question, up to 4 per call), 2–4 options, recommended one first. Every option is a real answer: a free value (URL, path) is asked afterwards in one short plain-text message, never via an option meaning "type it in Other".
 - Never write files in the target project without showing the change and getting approval.

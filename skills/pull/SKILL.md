@@ -11,7 +11,7 @@ Bring the team's latest config into this project. Rules for layers, merging, mar
 
 ## Ground rules
 
-Same as `/akg:setup`: short messages; every question through the `AskUserQuestion` tool (2–4 options, recommended first, up to 4 per call); **never write a file without showing it and getting approval**; nothing is imposed; **the local project always wins**. A dismissed or empty answer never ends the flow: take the conservative choice (keep local, no plugin, skip the file), say it in one line, and continue.
+Same as `/akg:setup`: short messages in the user's language (generated files stay in English); every question through the `AskUserQuestion` tool (2–4 options, recommended first, up to 4 per call); **never write a file without showing it and getting approval**; nothing is imposed; **the local project always wins**. A dismissed or empty answer never ends the flow: take the conservative choice (keep local, no plugin, skip the file), say it in one line, and continue.
 
 ## 1. Check
 
@@ -33,7 +33,7 @@ If nothing relevant changed (e.g. a commit touching only the team's README), upd
 
 | Change on the team side | Project overrides the key? | Action |
 |---|---|---|
-| Value added or changed | No | Propose applying it to the generated files. |
+| Value added or changed | No | Propose applying it to the generated files, including the settings derived from that answer (rules.md). |
 | Value added or changed | Yes | Conflict: ask "Team says X, project says Y" → **Keep local (Recommended)** / Take team / Merge (lists and text only). |
 | Value removed | — | Nothing to do on generated files beyond what the user approves; akg never removes settings. Mention it in one line. |
 | New active question (new in the catalog/team list, or newly enabled by `questions`) whose key has no value | — | Ask it like `/akg:setup` step 4: known answer first ("(Team)" / "(Detected)"), then its options, then "I don't know" (checkboxes without "I don't know" if `multiple`). |

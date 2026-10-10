@@ -18,8 +18,8 @@ Without it: `workflow`, `deps`, `env`, `arch`, `security`, `tracker` + every que
 Every active question is asked. A known answer (team, project or detected) is offered first; "I don't know" is offered last (single choice only).
 -->
 
-## Project context
-key: workflow.context
+## Project type
+key: workflow.type
 What kind of project is this?
 - Product in production (recommended)
   → Defaults for the next questions: full DoD, TDD, standard review.

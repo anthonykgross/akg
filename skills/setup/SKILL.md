@@ -14,6 +14,7 @@ Set up Claude Code on this project. Rules for layers, merging, marketplaces and 
 - The user is a senior developer who dislikes ceremony: short messages, no preamble.
 - **Ask every question with the `AskUserQuestion` tool**, never as plain text: 2–4 options, recommended option first with "(Recommended)" in its label and the reason in its description. The tool always adds a free-text "Other" choice, so rough answers are fine. Group up to 4 related questions in one call (one tab each).
 - **Every option is a real answer.** Never offer an option whose meaning is "type it in Other". When a value can't be an option (a URL, a path, a list of corrections), ask a yes/no-style question first, then ask for the value in **one short plain-text message** and wait for the user's reply.
+- **Talk in the user's language** (the language of the conversation, or of their instructions): translate questions, options, labels ("(Recommended)", "I don't know"…) and summaries from the catalog. Generated files stay in English, unless the Language answer (`git.language`) says otherwise.
 - Explain domain jargon in one sentence when it appears.
 - **Never write a file without showing it and getting approval.** Nothing is imposed: every value, setting and plugin is a proposal.
 - Never invent commands: use the ones the project declares.
@@ -33,14 +34,15 @@ Load the three layers (akg → team → project) as described in rules.md.
 
 Read before asking anything. Silently gather:
 - **Stack**: manifests (`package.json`, `pyproject.toml`, `go.mod`, `composer.json`, `pom.xml`, `Cargo.toml`…) and lockfiles.
-- **Commands** (test, lint, build, dev/run): only those declared — package scripts, `Makefile` targets, `composer.json` scripts, `pyproject` tool sections, CI files. Prefer the simplest declared form (`npm test`, `make test`). Leave a command empty rather than inventing one.
+- **Default branch**: `origin/HEAD` if there is a remote, otherwise the current branch.
+- **Commands** (test, lint, build, dev/run): only those declared — package scripts, `Makefile` targets, `composer.json` scripts, `pyproject` tool sections, CI files. Prefer the simplest declared form (`npm test`, `make test`). Leave a command empty rather than inventing one. A placeholder script (`echo`, `exit 0`) counts as absent; say so in the summary.
 - **Layout**: a sub-folder with its own manifest, at most two levels deep (skip `node_modules/`, `vendor/`, `.git/`), is a sub-project: `frontend` if its dependencies include a front-end framework (React, React Native, Vue, Angular, Svelte, Solid, Next, Nuxt…), else `backend`; folders without a manifest get no template. No sub-project → classify the root itself the same way.
 - **Understanding**: README, docs, folder structure, entry points, config files (not every file).
 - **Signals for the questions**: README and docs, CI and deploy files (`Dockerfile`, `k8s/`, `serverless.yml`, `vercel.json`…), test folders and how many tests exist, the last ~50 commit messages (`git log --oneline -50`: ticket ids like `PROJ-123`, `#123`), issue/PR templates, links in the README (Jira, Linear…), an existing `CLAUDE.md`.
 
 Then **pre-fill every active question** of the merged list (rules.md: Active questions):
 - value set by the team or project config → that value, marked `team` / `project`;
-- otherwise, an answer you can infer from the scan → that value, with its evidence in a few words ("tests in `src/**/*.test.ts`, 40 files" → TDD yes; "commits reference `SHOP-123`" → Jira);
+- otherwise, an answer you can infer from the scan **with clear evidence** → that value, with its evidence in a few words (one test file is not evidence of TDD; a weak hint is no pre-fill) ("tests in `src/**/*.test.ts`, 40 files" → TDD yes; "commits reference `SHOP-123`" → Jira);
 - otherwise, no pre-fill.
 
 ## 3. Confirm what was found
@@ -62,18 +64,18 @@ The approved "Understood" bullets (plus the user's additions) become the **`## P
 
 ## 4. Questions, pre-filled
 
-Ask **every active question**, whether or not its answer is already known — set by the team, by the project, or detected by the scan. The developer confirms in one click, or corrects / goes further. Use `AskUserQuestion`, batched by up to 4 (one tab per question; the `##` title, shortened to 12 chars, as the tab header). Each question has at most 4 options, in this order:
+Ask **every active question**, whether or not its answer is already known — set by the team, by the project, or detected by the scan. The developer confirms in one click, or corrects / goes further. Use `AskUserQuestion`, batched by up to 4 (one tab per question; tab header = a short form of the `##` title, max 12 chars, abbreviated freely: "Def. of Done", "Autonomy"). A question whose `→` lines set defaults for other questions (**Project type**) is asked **alone, first**, so the next batches' recommendations follow its answer. Each question has at most 4 options, in this order:
 1. **The known answer, if any**, labelled "<answer> (Team)", "<answer> (Project)" or "<answer> (Detected)", with its source as description ("commits reference SHOP-123"). Add it as an option if it is not one of the question's own.
-2. **The question's other options**, recommended one first (the recommended one is first overall when nothing is known). Keep as many as fit.
+2. **The question's other options**, recommended one first (the recommended one is first overall when nothing is known). When they don't all fit, drop first the ones the scan makes unlikely (Linear when commits reference `SHOP-123`), then the last ones; dropped options stay reachable through "Other". An option the scan makes irrelevant ("Run migrations" with no database) is not offered at all, in single and multiple choice alike.
 3. **"I don't know"** — always the last option.
 
-Options written as placeholders (`<detected shortcut>`) are filled from the scan, as the question's `→` lines say. A question marked `multiple` is asked with checkboxes (`multiSelect: true`) instead, as rules.md says: its own options only, known values marked in their label, no "I don't know"; nothing checked is a valid answer.
+Options written as placeholders (`<detected shortcut>`) are filled from the scan, as the question's `→` lines say. A question marked `multiple` is asked with checkboxes (`multiSelect: true`) instead, as rules.md says: its own options only, known values marked in their label, no "I don't know"; nothing checked is a valid answer. If its `→` lines turn it into a single choice (Local environment with nothing detected), still no "I don't know": store `[]` for "Nothing special".
 
 The tool adds "Other" for free text; interpret rough answers. A question with no fixed options (e.g. the DoD) gets 1–2 proposed versions built from the scan, the known one first.
 
 "I don't know" means: keep the team value if there is one, otherwise use the recommended option; it is a default, not an override, so nothing is written to the project `config.yaml` for it. Say which value was used in one line.
 
-For **every** answer, store it at its `key`, then apply its `→` instructions (rules.md): those under the chosen option, then the question-level ones. Follow-up questions they request (e.g. the Jira URL and project key):
+For **every** answer, store it at its `key` (format in rules.md), then apply its `→` instructions (rules.md): those under the chosen option, then the question-level ones. Follow-up questions they request (e.g. the Jira URL and project key):
 - **value detected by the scan** (URL in the README, `SHOP` from commits `SHOP-123`) → `AskUserQuestion` with the detected value(s) as real options ("SHOP (Detected)"), plus "I don't know";
 - **nothing detected** → ask in **one plain-text message** ("Jira URL and project key?") and wait for the reply. Never an `AskUserQuestion` whose option means "type it in Other". Several free values for the same tool go in the same message. Keep checks read-only and report each result in one line ("Jira MCP: not configured — suggested"); collect the proposed `CLAUDE.md` lines, plugins and settings for step 6.
 
@@ -89,9 +91,9 @@ Selecting "None", selecting nothing, or dismissing the question all mean "no plu
 
 Prepare, without writing yet:
 
-1. **`CLAUDE.md`** at the root from the `common` template — merged with the `frontend`/`backend` template when the project is a single one — including the approved `## Project context`; for each sub-project, `<folder>/CLAUDE.md` from its `frontend`/`backend` template. Templates are starting points: fill the placeholders with the confirmed commands and the answers, drop what doesn't apply, add what an answer requires (each question's `→` line says how). Keep it short. If a `CLAUDE.md` already exists, propose a merged version that keeps the user's content.
-2. **`.claude/settings.json`**: merged `settings`, `extraKnownMarketplaces` and `enabledPlugins` (rules.md). Merge with the existing file; show conflicts.
-3. **`.claude/akg/config.yaml`**: only what rules.md lists for the project file, with `synced` set to the team `version`.
+1. **`CLAUDE.md`** at the root from the `common` template — merged with the `frontend`/`backend` template when the project is a single one — including the approved `## Project context`; for each sub-project, `<folder>/CLAUDE.md` from its `frontend`/`backend` template. Templates are starting points: fill the placeholders with the confirmed commands and the answers, drop what doesn't apply, add what an answer requires (each question's `→` line says how). A `CLAUDE.md` line from an answer goes in the template section it fits best, otherwise under `## Rules`. Keep it short. If a `CLAUDE.md` already exists, propose a merged version that keeps the user's content.
+2. **`.claude/settings.json`**: merged `settings`, the settings derived from the answers (`→` Settings lines, plus `allow` for the confirmed test and lint commands, which Claude may always run), `extraKnownMarketplaces` and `enabledPlugins` (rules.md). Merge with the existing file; show conflicts.
+3. **`.claude/akg/config.yaml`**: only what rules.md lists for the project file, with `synced` set to the team `version` (no team → no `extends`, no `synced`).
 
 ## 7. Review and write
 

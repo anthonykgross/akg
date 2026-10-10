@@ -23,7 +23,7 @@ The layer closest to the project wins. A missing file in a layer is not an error
 ## `config.yaml` keys
 
 - `extends` (project only): team source — `github:owner/repo`, git URL, `https://…/config.yaml`, or a local path relative to the project. Optional `#<ref>` suffix (branch, tag or commit) for git sources and local git repos: `github:acme/claude-team#develop`. Without it: the remote's default branch, or the working tree of a local directory.
-- `synced` (project only): team version at last sync (commit SHA or content hash, as printed by `fetch.sh`).
+- `synced` (project only, only with `extends`): team version at last sync (commit SHA or content hash, as printed by `fetch.sh`).
 - `settings`: raw fragment of Claude Code's `settings.json`.
 - `marketplaces`: list of marketplace sources (same forms as `extends`, git or local directory).
 - `plugins.disabled`: plugin names (`name` or `name@marketplace`) never to propose.
@@ -57,6 +57,8 @@ Always say why a plugin is proposed: "`react-conventions` — `package.json` dep
 ## Generated `.claude/settings.json`
 
 - **Settings merge**: deep merge of the merged `settings` into the existing file. Objects key by key; arrays concatenated and deduplicated; a differing scalar is a conflict the user resolves. Never remove anything.
+- **Settings derived from answers** (`→ Settings:` lines, e.g. Claude autonomy, Dependencies, Secrets): not stored in `config.yaml` — the answers are. They are recomputed from the answers by `/akg:setup` and `/akg:pull` and merged like `settings`. Since akg never removes anything, a changed answer adds its new permissions; mention in one line the ones from the old answer that the user may want to remove by hand.
+- **Permission patterns are best-effort.** `deny: Bash(git push * main)` does not catch a bare `git push` run from `main`. Say so in one line when proposing such rules; the matching `CLAUDE.md` line is the real guard.
 - **Marketplaces**: one `extraKnownMarketplaces` entry per marketplace, keyed by the `name` in its `marketplace.json`:
   - `github:owner/repo` → `{ "source": { "source": "github", "repo": "owner/repo" } }`
   - git URL → `{ "source": { "source": "git", "url": "<url>" } }`
@@ -64,6 +66,12 @@ Always say why a plugin is proposed: "`react-conventions` — `package.json` dep
   - local directory → `{ "source": { "source": "directory", "path": "<path relative to project>" } }`
 - **Plugins**: `enabledPlugins["<plugin>@<marketplace>"] = true` for each accepted plugin.
 - A plugin whose `source` is not a relative path (external repo) must be installed once per developer: give `claude plugin install <plugin>@<marketplace> --scope project`.
+
+## Stored answers
+
+- Single choice: a short slug of the option (`Product in production` → `product`, `Ask first` → `ask`); yes/no questions → `true`/`false`; free text from "Other" is stored as typed.
+- `multiple`: a list of slugs (`[commit, push]`); nothing checked = `[]`. Dismissed: the team value, otherwise the options marked recommended, otherwise `[]` (for Claude autonomy: ask for everything).
+- Lists the user builds (Definition of Done) are stored as lists of short strings.
 
 ## Project `config.yaml` written by akg
 
