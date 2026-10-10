@@ -11,7 +11,7 @@ Format, for every layer (akg → team → project):
   They can ask a follow-up question (with its own key), check something read-only (a command, an MCP server, a file),
   propose something (a line in CLAUDE.md, a plugin, a setting). They never install or modify anything by themselves.
 Which questions are asked is set by `questions:` in config.yaml (a list of key prefixes, e.g. [workflow, tracker]).
-Without it: `workflow` + every question defined in the team/project questions.md. The rest of this catalog is off by default.
+Without it: `workflow`, `deps`, `arch`, `security` + every question defined in the team/project questions.md. The rest of this catalog is off by default.
 Every active question is asked. A known answer (team, project or detected) is offered first; "I don't know" is always offered last.
 -->
 
@@ -50,6 +50,49 @@ How thorough should Claude's self-review be before handing over?
 - Strict
   → CLAUDE.md: standard review, plus a pass on edge cases, security and performance.
 
+## Claude autonomy
+key: workflow.autonomy
+What can Claude do without asking first?
+- Edit and run checks only (recommended)
+  → CLAUDE.md: "Edit files and run tests/lint freely. Ask before committing, pushing, adding dependencies, running migrations or deleting files."
+  → Settings: ask for `Bash(git commit *)`, `Bash(git push *)`.
+- Also commit on feature branches
+  → CLAUDE.md: "Commit freely on feature branches, never on the default branch. Ask before pushing, adding dependencies, running migrations or deleting files."
+  → Settings: ask for `Bash(git push *)`.
+- Also push feature branches
+  → CLAUDE.md: "Commit and push feature branches freely. Never push to the default branch. Ask before adding dependencies or running migrations."
+→ Settings, whatever the answer: deny `Bash(git push --force *)` and `Bash(git push * main)` (use the detected default branch).
+
+## Dependencies
+key: deps.policy
+Can Claude add dependencies?
+- Ask first (recommended)
+  → CLAUDE.md: "Never add a dependency without asking. Prefer the standard library and existing dependencies."
+- Free, if justified
+  → CLAUDE.md: "You may add a dependency; say which and why in your summary."
+- Forbidden
+  → CLAUDE.md: "Never add dependencies."
+→ Settings: ask for the install command of the detected package manager (e.g. `Bash(npm install *)`).
+
+## Architecture
+key: arch.style
+How is the code organised?
+- Feature folders (recommended)
+- Hexagonal / DDD
+- Layered (MVC, controllers/services/repositories)
+→ Pre-fill from the folder structure, with evidence.
+→ CLAUDE.md: one line saying where new code goes, with the real folder names.
+
+## Secrets
+key: security.secrets
+Where do secrets live?
+- .env files, not committed (recommended)
+  → Settings: deny `Read(.env*)`. Check that `.env` is in `.gitignore`; report in one line.
+- Secret manager (Vault, AWS/GCP…)
+  → Ask which one (key: security.manager): offer a detected value as option, otherwise ask in one plain-text message.
+- CI variables only
+→ CLAUDE.md: "Never write, print or commit secrets; use placeholders."
+
 ## Ticket tracker
 key: tracker.tool
 Do you use a ticket tracker?
@@ -87,3 +130,47 @@ How are commit messages written?
 - Free form
   → CLAUDE.md: match the style of recent commits.
 → Detect from the last commits before proposing; a detected style is the known answer.
+
+## Test levels
+key: tests.levels
+Which tests do you write?
+- Unit + integration (recommended)
+- Unit only
+- Unit + integration + e2e
+  → Ask for the e2e command if none is detected (plain text).
+→ CLAUDE.md: which test level to write for which change, with the detected test folders.
+
+## Branching
+key: git.branching
+How do you branch?
+- GitHub flow: feature branches → main (recommended)
+- Trunk-based
+- Git flow: develop / release / main
+→ Detect branch names from `git branch -a` before proposing.
+→ CLAUDE.md: branch naming and the target branch of pull requests.
+
+## Database migrations
+key: db.migrations
+How are database migrations handled?
+- Migration tool; never edit an applied migration (recommended)
+  → Pre-fill the tool and folder from the scan. CLAUDE.md: the command to create a migration; never edit an applied one.
+- No migrations / schema-less
+→ Ask only if a database is detected (driver, ORM, migrations folder); otherwise skip it silently.
+
+## Language
+key: git.language
+Language for code, comments and commits?
+- English everywhere (recommended)
+- English code; local language for comments and commits
+  → Ask which language if it is not obvious from the recent commits.
+→ CLAUDE.md: one line with the choice.
+
+## Docs to maintain
+key: docs.policy
+Which docs must stay up to date?
+- README only (recommended)
+- README + ADRs
+  → Detect the ADR folder (`docs/adr`, `adr/`). CLAUDE.md: "Write an ADR for every architecture decision."
+- README + CHANGELOG
+  → CLAUDE.md: "Update CHANGELOG.md for every user-facing change."
+→ Add the choice to the Definition of Done.
