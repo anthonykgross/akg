@@ -47,6 +47,7 @@ The project file contains only `extends`, `synced` and overrides: a key present 
 
 Questions asked by `/akg:setup`, in Markdown, interpreted by Claude (rough answers are fine).
 - Same `##` title as a lower layer → replaces it. New title → added. Title followed by `skip` → removed.
+- `→` lines are free-text instructions for Claude: under an option, applied when it is chosen; at the end of the question, applied whatever the answer. They can ask a follow-up question (with its key), run a **read-only** check (command on PATH, MCP configured, file present) and propose something (a `CLAUDE.md` line, a plugin, a setting). They never install or modify anything: they come from a team repo, i.e. a third party.
 - Each question declares the `config.yaml` key its answer goes to (`key: deploy.target`). Base questions follow the same rule (`key: workflow.tdd`); `workflow` is not a special case.
 - Base questions: project context (POC, prod, lib…), DoD, TDD, review level. Optional questions come from upper layers.
 - A question whose key is already set by a lower layer is not asked; its value is shown instead.
@@ -80,6 +81,8 @@ Code convention **templates** (`common`, `backend`, `frontend`). Claude adapts t
 - **Sync reminder.** A `SessionStart` hook gets the team's latest version (`git ls-remote` for a repo, download + hash for a remote file; ~2 s timeout) and compares it with `synced`. Silent when nothing changed or offline; otherwise one line: `akg: team config updated — /akg:pull`. Shown once per new team version (notification state per developer in `~/.cache/akg/`).
 - **Remote single file** over HTTPS only, no auth in v1. Private team config → use a git repo (developer's git credentials).
 - **Empty team repo:** nothing is proposed for now.
+- **"What I understood" recap.** After detection, `/akg:setup` summarises the project (purpose, key folders, inferred architecture, integrations) and lets the developer add or correct points. The result is the `## Project context` section of `CLAUDE.md`; it belongs to the developer, who edits it directly later. `/akg:pull` never touches it.
+- **Single project**: the root is classified `frontend`/`backend` like a sub-project, and its `CLAUDE.md` merges `common` with that template.
 - **No dependency on the built-in `/init`.** `/akg:setup` does its own repo analysis and writes `CLAUDE.md`.
 
 ## Skill writing guidelines

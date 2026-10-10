@@ -8,6 +8,10 @@ drop sections that don't apply, fill in real commands, never invent commands the
 
 {{one-line description of the project, from the README or the manifest}}
 
+## Project context
+
+{{approved bullets from "What I understood": purpose, key folders, architecture, integrations, developer's points}}
+
 ## Commands
 
 - Test: `{{test command}}`

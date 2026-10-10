@@ -11,6 +11,9 @@ How thorough should Claude's self-review be? (team override)
 key: deploy.target
 Where is this project deployed?
 - Kubernetes (recommended)
+  → Ask the namespace (key: deploy.namespace).
+  → Check whether `kubectl` is on the PATH; if not, mention it.
 - Lambda
+  → CLAUDE.md: keep handlers small, cold start matters.
 - None
-→ Add the deployment target and its constraints to CLAUDE.md.
+→ Add the deployment target to the Project context.

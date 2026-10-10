@@ -36,9 +36,9 @@ If nothing relevant changed (e.g. a commit touching only the team's README), upd
 | Value added or changed | No | Propose applying it to the generated files. |
 | Value added or changed | Yes | Conflict: ask "Team says X, project says Y" → **Keep local (Recommended)** / Take team / Merge (lists and text only). |
 | Value removed | — | Nothing to do on generated files beyond what the user approves; akg never removes settings. Mention it in one line. |
-| New question whose key has no value | — | Ask it (as in `/akg:setup` step 3). |
+| New question whose key has no value | — | Ask it (as in `/akg:setup` step 4). |
 | Question replaced or removed | — | Ignore unless its key has no value. |
-| Template (`patterns/`) changed | — | Propose the equivalent targeted edit in the matching `CLAUDE.md` files (don't regenerate them: the user may have edited them). |
+| Template (`patterns/`) changed | — | Propose the equivalent targeted edit in the matching `CLAUDE.md` files (don't regenerate them: the user may have edited them). Never touch the `## Project context` section: it belongs to the developer. |
 | New plugin or marketplace | — | Evaluate relevance (rules.md) and propose, `multiSelect`, with reasons and a last "None" option. None or empty selection = all declined; continue. |
 
 Group conflicts in one `AskUserQuestion` call (one tab each, up to 4).

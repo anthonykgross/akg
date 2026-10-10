@@ -4,6 +4,7 @@ A Claude Code plugin that sets up Claude Code on a project from an optional **te
 
 - **Questions first**: project context, Definition of Done, TDD, review level, plus any question your team adds.
 - **Detects, then confirms**: stack, test/lint/build commands, monorepo sub-projects.
+- **Shows what it understood**: purpose, key folders, architecture, integrations — and lets you add what matters ("edge functions are in `supabase/functions`", "we do DDD"). It lands in a `Project context` section of `CLAUDE.md` you own.
 - **Generates**: `CLAUDE.md` (one per sub-project in a monorepo), `.claude/settings.json`, and the plugins to enable.
 - **Never imposes**: every file is shown before it is written; every value, setting and plugin is a proposal. Local choices always win over the team's.
 
@@ -95,12 +96,15 @@ A value set here is not asked in `/akg:setup`; it is shown instead.
 ### `questions.md`
 
 ```markdown
-## Deployment
-key: deploy.target
-Where is this project deployed?
-- Kubernetes (recommended)
-- Lambda
-→ Add the deployment target and its constraints to CLAUDE.md.
+## Ticket tracker
+key: tracker.tool
+Do you use a ticket tracker?
+- None (recommended)
+- Jira
+  → Ask its URL (key: tracker.url).
+  → Check whether a Jira MCP server or the `jira` CLI is available; if not, suggest one.
+  → CLAUDE.md: reference tickets as PROJ-123 in commits.
+→ Add the tracker to the Project context.
 
 ## TDD
 skip
@@ -108,7 +112,7 @@ skip
 
 - `## Title` identifies a question: the same title replaces the akg (or team) one, `skip` removes it, a new title adds it.
 - `key` is where the answer is stored in `config.yaml`.
-- The `→` line tells Claude how the answer shapes `CLAUDE.md`.
+- `→` lines are instructions for Claude: under an option, applied when it is chosen; at the end, applied whatever the answer. They can ask a follow-up question, run a read-only check, or propose a `CLAUDE.md` line, a plugin or a setting — never install or change anything by themselves.
 
 ### Plugins
 

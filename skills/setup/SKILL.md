@@ -32,7 +32,8 @@ Load the three layers (akg → team → project) as described in rules.md.
 Detect without asking:
 - **Stack**: from manifests (`package.json`, `pyproject.toml`, `go.mod`, `composer.json`, `pom.xml`, `Cargo.toml`…) and lockfiles.
 - **Commands** (test, lint, build, dev/run): only those declared — package scripts, `Makefile` targets, `composer.json` scripts, `pyproject` tool sections, CI files. Prefer the simplest declared form (`npm test`, `make test`). Leave a command empty rather than inventing one.
-- **Sub-projects**: a sub-folder with its own manifest, at most two levels deep (skip `node_modules/`, `vendor/`, `.git/`). `frontend` if its dependencies include a front-end framework (React, Vue, Angular, Svelte, Solid, Next, Nuxt…), else `backend`. Folders without a manifest get no template.
+- **Sub-projects**: a sub-folder with its own manifest, at most two levels deep (skip `node_modules/`, `vendor/`, `.git/`). `frontend` if its dependencies include a front-end framework (React, React Native, Vue, Angular, Svelte, Solid, Next, Nuxt…), else `backend`. Folders without a manifest get no template.
+- **Single project**: no sub-project → classify the root itself the same way (`frontend` / `backend`).
 
 Show it compactly, then ask with `AskUserQuestion` (options "Confirm (Recommended)" / "Edit"; on Edit, ask what to change):
 
@@ -41,34 +42,48 @@ Stack:    Node 20, React 18, Vite
 Test:     npm test
 Lint:     npm run lint
 Build:    npm run build
-Layout:   single project            (or: web/ → frontend, api/ → backend, infra/ → none)
+Layout:   single project → frontend (or: web/ → frontend, api/ → backend, infra/ → none)
 ```
 
-## 3. Questions
+## 3. What I understood
+
+Explore the repo (README, folder structure, entry points, config files — not every file) and summarise what you understood in 5–10 short bullets:
+- what the project does;
+- role of the key folders (`src/features/`, `supabase/functions/`…);
+- architecture you can infer, flagged as a guess ("`domain/`, `application/`, `infrastructure/` → looks like DDD / hexagonal");
+- integrations and external services (Supabase, Stripe, S3…);
+- anything that looks sensitive or unusual (generated code, legacy folder…).
+
+Show it, then ask with `AskUserQuestion`: "Looks right (Recommended)" / "Add or correct" (the user types points via "Other" or in a follow-up: "edge functions are in `supabase/functions`", "we do DDD, aggregates live in…", "never touch `legacy/`"). Apply the changes and ask again until approved. Keep the user's wording for the points they add.
+
+The approved bullets become the **`## Project context`** section of the root `CLAUDE.md`. Points specific to a sub-project also go in that sub-project's `CLAUDE.md`.
+
+## 4. Questions
 
 Build the merged question list (rules.md). For each question, in order:
 - If its `key` already has a value in the merged config (team or project), don't ask: list it in a single "From the team: …" line at the start.
 - Otherwise ask it with `AskUserQuestion`, using its options and recommended one, batched by up to 4 (one tab per question; use the `##` title, shortened to 12 chars, as the tab header). Ask the context question alone first, since it sets the defaults of the others (e.g. a POC → no TDD, light review). Free-text answers via "Other" are fine; interpret them.
 - A question with no fixed options (e.g. the DoD) gets 2–3 proposed versions as options, built from the context and the detected commands.
 - Store the answer at its `key`.
+- Then apply its `→` instructions (rules.md): those under the chosen option, then the question-level ones. Ask follow-up questions right away; keep checks read-only and report each result in one line ("Jira MCP: not configured — suggested"); collect the proposed `CLAUDE.md` lines, plugins and settings for step 6.
 
-## 4. Plugins
+## 5. Plugins
 
 Collect marketplaces and evaluate plugin relevance (rules.md). If there is no marketplace, skip this step silently.
 
 Ask with `AskUserQuestion` and `multiSelect: true`: one option per plugin (label = plugin name, description = its reason, e.g. "package.json depends on react"), plus a last option **"None"** so the user can explicitly pick no plugin. Recommended: all. With more than 3 plugins, split into several questions (tabs) by marketplace, each with its own "None".
 
-Selecting "None", selecting nothing, or dismissing the question all mean "no plugin": refused plugins go to `plugins.disabled`, then **continue to step 5** — choosing no plugin never ends the setup.
+Selecting "None", selecting nothing, or dismissing the question all mean "no plugin": refused plugins go to `plugins.disabled`, then **continue to step 6** — choosing no plugin never ends the setup.
 
-## 5. Generate
+## 6. Generate
 
 Prepare, without writing yet:
 
-1. **`CLAUDE.md`** at the root from the `common` template; for each sub-project, `<folder>/CLAUDE.md` from its `frontend`/`backend` template. Templates are starting points: fill the placeholders with the confirmed commands and the answers, drop what doesn't apply, add what an answer requires (each question's `→` line says how). Keep it short. If a `CLAUDE.md` already exists, propose a merged version that keeps the user's content.
+1. **`CLAUDE.md`** at the root from the `common` template — merged with the `frontend`/`backend` template when the project is a single one — including the approved `## Project context`; for each sub-project, `<folder>/CLAUDE.md` from its `frontend`/`backend` template. Templates are starting points: fill the placeholders with the confirmed commands and the answers, drop what doesn't apply, add what an answer requires (each question's `→` line says how). Keep it short. If a `CLAUDE.md` already exists, propose a merged version that keeps the user's content.
 2. **`.claude/settings.json`**: merged `settings`, `extraKnownMarketplaces` and `enabledPlugins` (rules.md). Merge with the existing file; show conflicts.
 3. **`.claude/akg/config.yaml`**: only what rules.md lists for the project file, with `synced` set to the team `version`.
 
-## 6. Review and write
+## 7. Review and write
 
 For each file, ask with `AskUserQuestion`: options "Write (Recommended)", "Edit", "Skip", with the file content (or the diff, for an existing file) in the `preview` of the "Write" option. Up to 4 files per call, one tab each. Write only what is approved; on Edit, apply the requested change and ask again.
 
