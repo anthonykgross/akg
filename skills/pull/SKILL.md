@@ -33,15 +33,15 @@ If nothing relevant changed (e.g. a commit touching only the team's README), upd
 
 | Change on the team side | Project overrides the key? | Action |
 |---|---|---|
-| Value added or changed | No | Propose applying it to the generated files, including the settings derived from that answer (rules.md). |
+| Value added or changed | No | One tab per change: **Apply (Recommended)** / Keep current, showing the effect on the generated files, including the settings derived from that answer (rules.md). |
 | Value added or changed | Yes | Conflict: ask "Team says X, project says Y" → **Keep local (Recommended)** / Take team / Merge (lists and text only). |
 | Value removed | — | Nothing to do on generated files beyond what the user approves; akg never removes settings. Mention it in one line. |
 | New active question (new in the catalog/team list, or newly enabled by `questions`) whose key has no value | — | Ask it like `/akg:setup` step 4: known answer first ("(Team)" / "(Detected)"), then its options, then "I don't know" (checkboxes without "I don't know" if `multiple`). |
 | Question replaced or removed | — | Ignore unless its key has no value. |
-| Template (`patterns/`) changed | — | Propose the equivalent targeted edit in the matching `CLAUDE.md` files (don't regenerate them: the user may have edited them). Never touch the `## Project context` section: it belongs to the developer. |
+| Template (`patterns/`) changed | — | Propose the equivalent targeted edit in the matching `CLAUDE.md` files (don't regenerate them: the user may have edited them). Never touch the `## Project context` section: it belongs to the developer. If the new convention contradicts the existing code (`export default` in `src/App.jsx` vs "named exports"), say so in one line; never change the code. |
 | New plugin or marketplace | — | Evaluate relevance (rules.md) and propose, `multiSelect`, with reasons and a last "None" option. None or empty selection = all declined; continue. |
 
-Group conflicts in one `AskUserQuestion` call (one tab each, up to 4).
+Group changes and conflicts in `AskUserQuestion` calls of up to 4 tabs, then new questions, then plugins. Recompute derived settings only for answers that changed (team value taken, new question answered).
 
 **Refusing a team change makes it a local override**: if the user declines a non-overridden value, write the current value into the project `config.yaml`; a declined plugin goes to `plugins.disabled`. That way it is not proposed again.
 

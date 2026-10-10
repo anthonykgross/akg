@@ -58,7 +58,7 @@ Always say why a plugin is proposed: "`react-conventions` — `package.json` dep
 ## Generated `.claude/settings.json`
 
 - **Settings merge**: deep merge of the merged `settings` into the existing file. Objects key by key; arrays concatenated and deduplicated; a differing scalar is a conflict the user resolves. Never remove anything.
-- **Settings derived from answers** (`→ Settings:` lines, e.g. Claude autonomy, Dependencies, Secrets): not stored in `config.yaml` — the answers are. They are recomputed from the answers by `/akg:setup` and `/akg:pull` and merged like `settings`. Since akg never removes anything, a changed answer adds its new permissions; mention in one line the ones from the old answer that the user may want to remove by hand.
+- **Settings derived from answers** (`→ Settings:` lines, e.g. Claude autonomy, Dependencies, Secrets): not stored in `config.yaml` — the answers are. They are recomputed from the answers by `/akg:setup` (all answers) and `/akg:pull` (only the answers that changed) and merged like `settings`. Since akg never removes anything, a changed answer adds its new permissions; mention in one line the ones from the old answer that the user may want to remove by hand.
 - **Permission patterns are best-effort.** `deny: Bash(git push * main)` does not catch a bare `git push` run from `main`. Say so in one line when proposing such rules; the matching `CLAUDE.md` line is the real guard.
 - **Marketplaces**: one `extraKnownMarketplaces` entry per marketplace, keyed by the `name` in its `marketplace.json`:
   - `github:owner/repo` → `{ "source": { "source": "github", "repo": "owner/repo" } }`
