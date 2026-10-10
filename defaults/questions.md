@@ -110,7 +110,7 @@ Anything Claude should know to work on this project locally?
 → The options are built from the scan: up to 3 detected items, excluding the test/lint/build/dev commands already confirmed (Makefile targets such as `make up` / `make shell`, project CLIs such as `bin/console`, `artisan`, `manage.py` — dev tooling, never the binary the project itself ships (the `bin` of `package.json`, a Go `main`) — task runners such as `just` or a Taskfile, infrastructure tools whose files are in the repo such as `terraform` (`*.tf`), `kubectl`/`helm` (manifests, charts), `pulumi`), each labelled "(Detected)" with its source, then "Something to add". Nothing detected → single choice "Nothing special (recommended)" / "Something to add".
 → If the commands run in a container (env.runtime): ask the same for inside the container (tools available only there, how to open a shell, which service).
 → Check read-only that the CLIs mentioned are on the PATH (or in the container image definition); report missing ones in one line.
-→ Settings: for a detected tool with destructive commands, ask for them — `terraform apply/destroy`, `kubectl apply/delete`, `helm install/upgrade/uninstall`, `docker compose down -v`, `pulumi up/destroy` — even if nothing is checked (the tool is in the repo, so Claude may use it). Read-only commands (`terraform plan`, `kubectl get`) stay free.
+→ Settings: for a detected tool with destructive commands, ask for them — `terraform apply/destroy`, `kubectl apply/delete`, `helm install/upgrade/uninstall`, `docker compose down -v`, `pulumi up/destroy` — even if nothing is checked (the tool is in the repo, so Claude may use it). Write each rule in both forms, bare and with arguments (`Bash(terraform apply)` and `Bash(terraform apply *)`). Read-only commands (`terraform plan`, `kubectl get`) stay free.
 → CLAUDE.md: a "## Local environment" section, one line per tool and when to use it; for a destructive tool, add "Never run <commands> without asking."
 
 ## Architecture
@@ -126,7 +126,7 @@ How is the code organised?
 key: security.secrets
 Where do secrets live?
 - .env files, not committed (recommended)
-  → Settings: deny `Read(**/.env*)` (any folder, for monorepos). Check that `.env*` is in `.gitignore`; if not (or no `.gitignore`), propose adding it as an extra file in the review step.
+  → Settings: deny `Read(**/.env*)` (any folder, for monorepos). Check that `.env*` is in `.gitignore`; if not (or no `.gitignore`), propose adding `.env*` followed by `!.env.example` (keep the committed example) as an extra file in the review step.
 - Secret manager (Vault, AWS/GCP…)
   → Ask which one (key: security.manager): offer a detected value as option, otherwise ask in one plain-text message.
 - CI variables only
