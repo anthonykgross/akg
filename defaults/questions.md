@@ -5,13 +5,14 @@ Format, for every layer (akg → team → project):
 - `## Title` identifies a question. Same title in a higher layer replaces it; `skip` as its body removes it.
 - `key:` is where the answer is stored in `.claude/akg/config.yaml`. Required: a question without `key:` is ignored (with a one-line warning).
 - Options are suggestions; rough free-text answers are fine.
+- `multiple` (line after `key:`): checkboxes instead of a single choice, for independent options (max 4). The answer is a list; nothing checked = empty list.
 - `→` lines are free-text instructions for Claude:
   - under an option: applied only when that option is chosen;
   - at the end of the question: applied whatever the answer.
   They can ask a follow-up question (with its own key), check something read-only (a command, an MCP server, a file),
   propose something (a line in CLAUDE.md, a plugin, a setting). They never install or modify anything by themselves.
 Which questions are asked is set by `questions:` in config.yaml (a list of key prefixes, e.g. [workflow, tracker]).
-Without it: `workflow`, `deps`, `arch`, `security` + every question defined in the team/project questions.md. The rest of this catalog is off by default.
+Without it: `workflow`, `arch`, `security` + every question defined in the team/project questions.md. The rest of this catalog is off by default.
 Every active question is asked. A known answer (team, project or detected) is offered first; "I don't know" is always offered last.
 -->
 
@@ -52,27 +53,21 @@ How thorough should Claude's self-review be before handing over?
 
 ## Claude autonomy
 key: workflow.autonomy
-What can Claude do without asking first?
-- Edit and run checks only (recommended)
-  → CLAUDE.md: "Edit files and run tests/lint freely. Ask before committing, pushing, adding dependencies, running migrations or deleting files."
-  → Settings: ask for `Bash(git commit *)`, `Bash(git push *)`.
-- Also commit on feature branches
-  → CLAUDE.md: "Commit freely on feature branches, never on the default branch. Ask before pushing, adding dependencies, running migrations or deleting files."
-  → Settings: ask for `Bash(git push *)`.
-- Also push feature branches
-  → CLAUDE.md: "Commit and push feature branches freely. Never push to the default branch. Ask before adding dependencies or running migrations."
-→ Settings, whatever the answer: deny `Bash(git push --force *)` and `Bash(git push * main)` (use the detected default branch).
-
-## Dependencies
-key: deps.policy
-Can Claude add dependencies?
-- Ask first (recommended)
-  → CLAUDE.md: "Never add a dependency without asking. Prefer the standard library and existing dependencies."
-- Free, if justified
-  → CLAUDE.md: "You may add a dependency; say which and why in your summary."
-- Forbidden
-  → CLAUDE.md: "Never add dependencies."
-→ Settings: ask for the install command of the detected package manager (e.g. `Bash(npm install *)`).
+multiple
+What can Claude do without asking first? Editing files and running tests/lint is always allowed.
+- Commit on feature branches
+  → CLAUDE.md: "Commit freely on feature branches, never on the default branch."
+  → Settings: allow `Bash(git commit *)`.
+- Push feature branches
+  → CLAUDE.md: "Push feature branches freely, never the default branch."
+  → Settings: allow `Bash(git push *)`.
+- Add dependencies
+  → CLAUDE.md: "You may add a dependency when justified; say which and why in your summary."
+  → Settings: allow the install command of the detected package manager (e.g. `Bash(npm install *)`).
+- Run migrations
+  → CLAUDE.md: "You may run migrations on the local database only."
+→ For each unchecked action: CLAUDE.md "Ask before <action>"; settings: ask for its command.
+→ Whatever the answer: CLAUDE.md "Ask before deleting files. Prefer the standard library and existing dependencies." Settings: deny `Bash(git push --force *)` and `Bash(git push * main)` (use the detected default branch).
 
 ## Architecture
 key: arch.style
@@ -167,10 +162,11 @@ Language for code, comments and commits?
 
 ## Docs to maintain
 key: docs.policy
+multiple
 Which docs must stay up to date?
-- README only (recommended)
-- README + ADRs
+- README (recommended)
+- ADRs
   → Detect the ADR folder (`docs/adr`, `adr/`). CLAUDE.md: "Write an ADR for every architecture decision."
-- README + CHANGELOG
+- CHANGELOG
   → CLAUDE.md: "Update CHANGELOG.md for every user-facing change."
-→ Add the choice to the Definition of Done.
+→ Add the checked docs to the Definition of Done.

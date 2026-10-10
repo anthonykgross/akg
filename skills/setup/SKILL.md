@@ -67,6 +67,8 @@ Ask **every active question**, whether or not its answer is already known — se
 2. **The question's other options**, recommended one first (the recommended one is first overall when nothing is known). Keep as many as fit.
 3. **"I don't know"** — always the last option.
 
+A question marked `multiple` is asked with checkboxes (`multiSelect: true`) instead, as rules.md says: its own options only, known values marked in their label, no "I don't know"; nothing checked is a valid answer.
+
 The tool adds "Other" for free text; interpret rough answers. A question with no fixed options (e.g. the DoD) gets 1–2 proposed versions built from the scan, the known one first.
 
 "I don't know" means: keep the team value if there is one, otherwise use the recommended option; it is a default, not an override, so nothing is written to the project `config.yaml` for it. Say which value was used in one line.
