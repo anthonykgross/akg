@@ -40,7 +40,7 @@ If nothing relevant changed (e.g. a commit touching only the team's README), upd
 | New active question (new in the catalog/team list, or newly enabled by `questions`) whose key has no value | — | Ask it like `/akg:setup` step 4: known answer first ("(Team)" / "(Detected)"), then its options, then "I don't know" (checkboxes without "I don't know" if `multiple`). |
 | Active conditional question ("Ask only if …") whose condition now holds and whose key has no value (e.g. a `compose.yaml` appeared) | — | Ask it like a new question, saying what triggered it. |
 | Question replaced or removed | — | Ignore unless its key has no value. |
-| Template (`patterns/`) changed | — | Propose the equivalent targeted edit in the matching `CLAUDE.md` files (don't regenerate them: the user may have edited them). Never touch the `## Project context` section: it belongs to the developer. If the new convention contradicts the existing code (`export default` in `src/App.jsx` vs "named exports"), say so in one line; never change the code. |
+| Template (`patterns/`) changed | — | One tab in the changes batch, **Apply (Recommended)** / Keep current, with the targeted edit of the matching `CLAUDE.md` files in the `preview` of Apply (don't regenerate them: the user may have edited them). Never touch the `## Project context` section: it belongs to the developer. If the new convention contradicts the existing code (`export default` in `src/App.jsx` vs "named exports"), say so in one line; never change the code. |
 | New plugin or marketplace | — | Evaluate relevance (rules.md) and propose, `multiSelect`, with reasons and a last "None" option. None or empty selection = all declined; continue. |
 
 Group changes and conflicts in `AskUserQuestion` calls of up to 4 tabs, then new questions, then plugins. Recompute derived settings only for answers that changed (team value taken, new question answered).
@@ -53,4 +53,4 @@ Prepare the updated files: the affected `CLAUDE.md` files (targeted edits), `.cl
 
 For each file, ask with `AskUserQuestion`: "Write (Recommended)" / "Edit" / "Skip", with the diff in the `preview` of "Write". Write only what is approved. Always update `synced` in the `config.yaml` proposal, even if every change was declined (they are now overrides). If the user skips `config.yaml`, nothing is written there: `synced` stays behind, so say in one line that the reminder and these changes will come back.
 
-End with at most 3 lines: what changed, install commands for any external-source plugin, and "commit `.claude/` so teammates don't get the reminder again".
+End with at most 3 lines: what changed, install commands for any external-source plugin, and "commit `.claude/` and the changed `CLAUDE.md` files so teammates get them and don't see the reminder again".
