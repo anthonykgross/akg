@@ -117,7 +117,7 @@ skip
 ```
 
 - `## Title` identifies a question: the same title replaces the akg (or team) one, `skip` removes it, a new title adds it.
-- `key` is where the answer is stored in `config.yaml`.
+- `key` is where the answer is stored in `config.yaml`. Required: a question without `key` is ignored, with a one-line warning.
 - `→` lines are instructions for Claude: under an option, applied when it is chosen; at the end, applied whatever the answer. They can ask a follow-up question, run a read-only check, or propose a `CLAUDE.md` line, a plugin or a setting — never install or change anything by themselves.
 
 ### Plugins

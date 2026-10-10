@@ -3,7 +3,7 @@
 <!--
 Format, for every layer (akg → team → project):
 - `## Title` identifies a question. Same title in a higher layer replaces it; `skip` as its body removes it.
-- `key:` is where the answer is stored in `.claude/akg/config.yaml`.
+- `key:` is where the answer is stored in `.claude/akg/config.yaml`. Required: a question without `key:` is ignored (with a one-line warning).
 - Options are suggestions; rough free-text answers are fine.
 - `→` lines are free-text instructions for Claude:
   - under an option: applied only when that option is chosen;
