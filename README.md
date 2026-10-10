@@ -10,7 +10,7 @@ A Claude Code plugin that sets up Claude Code on a project from an optional **te
 ## Install
 
 ```
-/plugin marketplace add <owner>/akg
+/plugin marketplace add anthonykgross/akg
 /plugin install akg@akg
 ```
 
