@@ -1,0 +1,12 @@
+{
+  "name": "akg",
+  "description": "akg — team-driven Claude Code setup",
+  "owner": { "name": "Anthony Gross" },
+  "plugins": [
+    {
+      "name": "akg",
+      "source": "./",
+      "description": "Set up Claude Code on a project from an optional team config, then keep it in sync."
+    }
+  ]
+}

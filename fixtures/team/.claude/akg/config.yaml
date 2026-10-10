@@ -1,0 +1,13 @@
+# Team config (fixture). The marketplace in this repo is used implicitly.
+workflow:
+  dod:
+    - tests pass
+    - lint clean
+    - docs updated
+  tdd: true
+  review: standard
+
+settings:
+  permissions:
+    deny:
+      - "Read(.env*)"

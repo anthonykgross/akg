@@ -1,0 +1,6 @@
+{
+  "name": "terraform-helpers",
+  "version": "0.1.0",
+  "description": "Apply the team's Terraform conventions.",
+  "author": { "name": "Acme" }
+}

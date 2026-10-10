@@ -1,0 +1,32 @@
+{
+  "name": "acme-team",
+  "description": "Fixture team marketplace for akg tests",
+  "owner": { "name": "Acme" },
+  "plugins": [
+    {
+      "name": "code-review",
+      "source": "./plugins/code-review",
+      "description": "Review to the team's standards (no relevance: proposed everywhere)"
+    },
+    {
+      "name": "react-conventions",
+      "source": "./plugins/react-conventions",
+      "description": "Team React conventions",
+      "relevance": {
+        "topic": "React",
+        "signals": {
+          "manifestDeps": [{ "file": "[/\\\\]package\\.json$", "pattern": "\"react\"\\s*:" }]
+        }
+      }
+    },
+    {
+      "name": "terraform-helpers",
+      "source": "./plugins/terraform-helpers",
+      "description": "Team Terraform conventions",
+      "relevance": {
+        "topic": "Terraform",
+        "signals": { "filesRead": ["**/*.tf"], "cli": ["terraform"] }
+      }
+    }
+  ]
+}

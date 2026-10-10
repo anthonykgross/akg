@@ -1,0 +1,13 @@
+{
+  "name": "no-team",
+  "version": "1.0.0",
+  "description": "Fixture: small Node CLI without team config",
+  "type": "module",
+  "bin": { "greet": "src/index.js" },
+  "scripts": {
+    "test": "node --test",
+    "lint": "eslint src",
+    "build": "echo 'nothing to build'"
+  },
+  "devDependencies": { "eslint": "^9.0.0" }
+}

@@ -1,0 +1,64 @@
+# akg rules
+
+Shared by `/akg:setup` and `/akg:sync`. Paths: `<plugin>` = `${CLAUDE_PLUGIN_ROOT}`, `<team>` = the fetched team path, `<project>` = the project root.
+
+## Layers
+
+| Layer | `config.yaml` | `questions.md` | `patterns/` |
+|---|---|---|---|
+| akg | — | `<plugin>/defaults/questions.md` | `<plugin>/defaults/patterns/` |
+| team | `<team>/.claude/akg/config.yaml` (or the file itself if the team source is a single file) | `<team>/.claude/akg/questions.md` | `<team>/.claude/akg/patterns/` |
+| project | `<project>/.claude/akg/config.yaml` | `<project>/.claude/akg/questions.md` | `<project>/.claude/akg/patterns/` |
+
+The layer closest to the project wins. A missing file in a layer is not an error.
+
+- **`config.yaml`**: deep merge, project over team. A key present in the project file is an override.
+- **`questions.md`**: a question is identified by its `## Title`. Same title in a higher layer replaces it; a body of `skip` removes it; a new title is added (after the lower layers' questions).
+- **`patterns/`**: per file (`common.md`, `backend.md`, `frontend.md`): the highest layer that has the file wins.
+
+## `config.yaml` keys
+
+- `extends` (project only): team source — `github:owner/repo`, git URL, `https://…/config.yaml`, or a local path relative to the project.
+- `synced` (project only): team version at last sync (commit SHA or content hash, as printed by `fetch.sh`).
+- `settings`: raw fragment of Claude Code's `settings.json`.
+- `marketplaces`: list of marketplace sources (same forms as `extends`, git or local directory).
+- `plugins.disabled`: plugin names (`name` or `name@marketplace`) never to propose.
+- Any other key: an answer, stored at the key its question declares (e.g. `workflow.tdd`, `deploy.target`).
+
+## Fetching
+
+Run `<plugin>/scripts/fetch.sh <source> <project>`. It prints `kind`, `path`, `version`. If it fails (offline, auth, not found), say so in one line and continue as if there were no team config — never block.
+
+## Marketplaces
+
+Sources, in order: the team project itself if `<team>/.claude-plugin/marketplace.json` exists (implicit), then `marketplaces` from the merged config. Fetch each with `fetch.sh` and read its `.claude-plugin/marketplace.json`. No marketplace → no plugin proposed.
+
+## Plugin relevance (fixed rules)
+
+For each plugin entry not in `plugins.disabled` and not already in `enabledPlugins`:
+- No `relevance` block → proposed.
+- Otherwise proposed if **any** signal matches:
+
+| Signal | Check |
+|---|---|
+| `manifestDeps` | A project file whose path matches `file` (regex, case-insensitive) has content matching `pattern` (regex). Look at manifests only: `package.json`, `composer.json`, `pyproject.toml`, `requirements*.txt`, `go.mod`, `Cargo.toml`, `pom.xml`, `build.gradle*`, `Gemfile` — skip `node_modules/`, `vendor/`, `.git/`. |
+| `filesRead` | A file matching the glob exists in the repo (same exclusions). |
+| `cwd` | The glob matches the project path. |
+| `cli` | The command name appears in a detected command (package scripts, `Makefile` targets, CI files). |
+| `hosts` | Ignored. |
+
+Always say why a plugin is proposed: "`react-conventions` — `package.json` depends on react".
+
+## Generated `.claude/settings.json`
+
+- **Settings merge**: deep merge of the merged `settings` into the existing file. Objects key by key; arrays concatenated and deduplicated; a differing scalar is a conflict the user resolves. Never remove anything.
+- **Marketplaces**: one `extraKnownMarketplaces` entry per marketplace, keyed by the `name` in its `marketplace.json`:
+  - `github:owner/repo` → `{ "source": { "source": "github", "repo": "owner/repo" } }`
+  - git URL → `{ "source": { "source": "git", "url": "<url>" } }`
+  - local directory → `{ "source": { "source": "directory", "path": "<path relative to project>" } }`
+- **Plugins**: `enabledPlugins["<plugin>@<marketplace>"] = true` for each accepted plugin.
+- A plugin whose `source` is not a relative path (external repo) must be installed once per developer: give `claude plugin install <plugin>@<marketplace> --scope project`.
+
+## Project `config.yaml` written by akg
+
+Only: `extends`, `synced`, values that differ from the team (or all answers when there is no team), local `marketplaces` additions, `plugins.disabled` (including plugins the user refused). Comment overrides briefly when the reason is known (`tdd: false  # POC`).

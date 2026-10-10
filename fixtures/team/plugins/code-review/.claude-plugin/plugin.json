@@ -1,0 +1,6 @@
+{
+  "name": "code-review",
+  "version": "0.1.0",
+  "description": "Review the current diff against the team's standards.",
+  "author": { "name": "Acme" }
+}
