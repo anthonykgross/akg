@@ -23,7 +23,7 @@ Set up Claude Code on this project. Rules for layers, merging, marketplaces and 
 
 ## 1. Team config
 
-Ask with `AskUserQuestion`: "Extend a team config?" — options "No team config (Recommended)", "Yes, I have one" and "This project is the team source" (other projects will extend it: no `extends`, and [source-init](${CLAUDE_PLUGIN_ROOT}/skills/source-init/SKILL.md) runs after step 7). If a candidate is obvious (e.g. a sibling folder containing `.claude/akg/`), offer it as a fourth option with its path.
+Ask with `AskUserQuestion`: "Extend a team config?" — options "No team config (Recommended)", "Yes, I have one" and "This project is the team source" (other projects will extend it: hand over to [source-init](${CLAUDE_PLUGIN_ROOT}/skills/source-init/SKILL.md) from its step 2, which runs the rest of this setup as team defaults). If a candidate is obvious (e.g. a sibling folder containing `.claude/akg/`), offer it as a fourth option with its path.
 On "Yes, I have one", ask in one plain-text message: "Where is it? (`github:owner/repo`, git URL, HTTPS URL to a `config.yaml`, or local path; add `#branch` to use a branch other than the default)" and wait for the reply.
 
 If given, run `${CLAUDE_PLUGIN_ROOT}/scripts/fetch.sh <source> <project root>` and keep `path`, `kind`, `version`. On failure, say it in one line and offer to retry or continue without a team.
@@ -104,5 +104,3 @@ Then, in at most 3 lines:
 - what was written;
 - the install command for any external-source plugin;
 - next step: commit `.claude/` and `CLAUDE.md` so teammates get the same setup; `/akg:pull` will pull team updates.
-
-If step 1 was "This project is the team source", continue with [source-init](${CLAUDE_PLUGIN_ROOT}/skills/source-init/SKILL.md) from its step 2 (the preconditions hold), and replace the next-step line above with its own.

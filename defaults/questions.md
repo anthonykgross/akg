@@ -7,6 +7,8 @@ Format, for every layer (akg → team → project):
 - Options are suggestions; rough free-text answers are fine.
 - `multiple` (line after `key:`): checkboxes instead of a single choice, for independent options (max 4). The answer is a list; nothing checked = empty list.
   Use it for a list of independent actions or items; a question picking a level or one tool (strict/permissive, Jira/Linear) stays single choice.
+- `per-project` (line after `key:`, or after `multiple`): the answer only makes sense for one project (its containers, its shortcuts, its folders).
+  `/akg:source-init` neither asks nor stores it, so projects extending the source answer it themselves. Same for a follow-up key marked `per-project` (`(key: x.y, per-project)`, or `x.y per-project` in a list of keys).
 - `→` lines are free-text instructions for Claude:
   - under an option: applied only when that option is chosen;
   - at the end of the question: applied whatever the answer.
@@ -85,9 +87,10 @@ Can Claude add dependencies?
 
 ## Command environment
 key: env.runtime
+per-project
 Where are the project commands (tests, lint, build) run?
 - Inside a container (docker compose exec…) (recommended when a compose file defines services)
-  → Detect the service names from the compose file; offer them as options, otherwise ask in one plain-text message (key: env.service).
+  → Detect the service names from the compose file; offer them as options, otherwise ask in one plain-text message (key: env.service, per-project).
   → CLAUDE.md: run the test, lint and build commands as `docker compose exec <service> <command>`; use these forms in the commands list and the Definition of Done. Not the dev server when compose already starts it (`command:` in the compose file).
   → Settings: allow the container forms of the test and lint commands; ask for `Bash(docker compose down -v *)` (deletes volumes, i.e. local data).
 - On the host
@@ -101,12 +104,13 @@ Where are the project commands (tests, lint, build) run?
 ## Local environment
 key: env.tools
 multiple
+per-project
 Anything Claude should know to work on this project locally?
 - <detected shortcut> (Detected)
 - <detected project CLI> (Detected)
 - <detected task runner> (Detected)
 - Something to add
-  → Ask in one plain-text message: CLIs, shortcuts, aliases and prerequisites (VPN, aws-vault, seed data…), and what each is for (key: env.notes).
+  → Ask in one plain-text message: CLIs, shortcuts, aliases and prerequisites (VPN, aws-vault, seed data…), and what each is for (key: env.notes, per-project).
 → The options are built from the scan: up to 3 detected items, excluding the test/lint/build/dev commands already confirmed (Makefile targets such as `make up` / `make shell`, project CLIs such as `bin/console`, `artisan`, `manage.py` — dev tooling, never the binary the project itself ships (the `bin` of `package.json`, a Go `main`) — task runners such as `just` or a Taskfile, infrastructure tools whose files are in the repo such as `terraform` (`*.tf`), `kubectl`/`helm` (manifests, charts), `pulumi`), each labelled "(Detected)" with its source, then "Something to add". Nothing detected → single choice "Nothing special (recommended)" / "Something to add".
 → If the commands run in a container (env.runtime): ask the same for inside the container (tools available only there, how to open a shell, which service).
 → Check read-only that the CLIs mentioned are on the PATH (or in the container image definition); report missing ones in one line.
@@ -115,6 +119,7 @@ Anything Claude should know to work on this project locally?
 
 ## Architecture
 key: arch.style
+per-project
 How is the code organised?
 - Feature folders (recommended)
 - Hexagonal / DDD
@@ -137,19 +142,19 @@ key: tracker.tool
 Where are tickets tracked?
 - None (recommended)
 - Jira
-  → Ask the site URL, the project key and Cloud vs Data Center (keys: tracker.url, tracker.project, tracker.hosting): offer detected values as options (URL from the README, key from commits like `SHOP-123`), otherwise ask in one plain-text message.
+  → Ask the site URL, the project key and Cloud vs Data Center (keys: tracker.url, tracker.project per-project, tracker.hosting): offer detected values as options (URL from the README, key from commits like `SHOP-123`), otherwise ask in one plain-text message.
   → Check whether an Atlassian/Jira MCP server is configured (`claude mcp list`) or a `jira` CLI is on the PATH; if neither, suggest one (the Atlassian MCP server works with Cloud only).
   → CLAUDE.md: reference tickets as <PROJECT>-123 in branch names and commit messages.
 - GitHub Issues
-  → Detect the repository from `git remote -v` (key: tracker.project); ask in plain text only if there is no GitHub remote.
+  → Detect the repository from `git remote -v` (key: tracker.project, per-project); ask in plain text only if there is no GitHub remote.
   → Check whether the `gh` CLI is on the PATH and authenticated (`gh auth status`); if not, suggest it.
   → CLAUDE.md: reference issues as #123 in commit messages; "Closes #123" in pull requests.
 - Linear
-  → Ask the team key (key: tracker.project): offer a detected value as option, otherwise ask in one plain-text message.
+  → Ask the team key (key: tracker.project, per-project): offer a detected value as option, otherwise ask in one plain-text message.
   → Check whether a Linear MCP server is configured (`claude mcp list`); if not, suggest it.
   → CLAUDE.md: reference issues by their identifier in branch names and commit messages.
 → Pre-fill from the scan: ticket ids in recent commits and branch names, tracker links in the README, `.github/ISSUE_TEMPLATE/`.
-→ Any other tool (GitLab, Azure DevOps, Trello…), given through "Other": ask in one plain-text message its URL and how tickets are referenced (keys: tracker.url, tracker.project); check whether its CLI is on the PATH (`glab`, `az`…).
+→ Any other tool (GitLab, Azure DevOps, Trello…), given through "Other": ask in one plain-text message its URL and how tickets are referenced (keys: tracker.url, tracker.project per-project); check whether its CLI is on the PATH (`glab`, `az`…).
 → If a tracker is chosen — CLAUDE.md (shared, so conditional: access is per developer): "When given a ticket id and you can access the tracker (MCP server or CLI), read the ticket before starting."
 → If a tracker is chosen: add it, its URL and project to the Project context.
 
@@ -180,7 +185,7 @@ Which tests do you write?
 - Unit + integration (recommended)
 - Unit only
 - Unit + integration + e2e
-  → Ask for the e2e command if none is detected (plain text).
+  → Ask for the e2e command if none is detected (plain text, per-project).
 → CLAUDE.md: which test level to write for which change, with the detected test folders.
 
 ## Branching
