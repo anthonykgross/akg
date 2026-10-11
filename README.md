@@ -66,6 +66,8 @@ plugins:
 
 A team repo is a standard [Claude Code plugin marketplace](https://code.claude.com/docs/en/plugin-marketplaces) plus `.claude/akg/`. Skills, hooks, agents and MCP servers are shipped as regular plugins — akg proposes them, Claude Code installs them.
 
+To create one, run `/akg:source-init` in an empty folder: it asks the team's stacks and conventions, then builds the marketplace from your installed plugins, official Anthropic plugins and skills copied from existing projects.
+
 ```
 claude-team/
   .claude-plugin/marketplace.json   # optional: your plugins
@@ -74,6 +76,7 @@ claude-team/
     config.yaml
     questions.md                    # optional
     patterns/                       # optional
+    team.md                         # optional: instructions for developers
 ```
 
 A team can also be a single `config.yaml` (local or HTTPS), without plugins.
@@ -128,9 +131,21 @@ skip
 ```
 
 - `## Title` identifies a question: the same title replaces the akg (or team) one, `skip` removes it, a new title adds it.
+- `per-project` (optional, after `key`/`multiple`, or `(key: x.y, per-project)` on a follow-up) marks an answer that only makes sense for one project (its repo, its containers): `/akg:source-init` skips it, so each project answers it.
 - `multiple` (optional, after `key`) asks with checkboxes instead of a single choice (max 4 options); the answer is a list, nothing checked is a valid answer.
 - `key` is where the answer is stored in `config.yaml`. Required: a question without `key` is ignored, with a one-line warning.
 - `→` lines are instructions for Claude: under an option, applied when it is chosen; at the end, applied whatever the answer. They can ask a follow-up question, run a read-only check, or propose a `CLAUDE.md` line, a plugin or a setting — never install or change anything by themselves.
+
+### `team.md`
+
+Free Markdown for developers: onboarding, tools to install by hand (CLIs, MCP servers with tokens, complex skills), team rules.
+
+```markdown
+## Tools to install
+- **gh** — read issues and open PRs: `brew install gh && gh auth login`
+```
+
+Developers read it with `/akg:team`; `/akg:setup` points to it at the end, and `/akg:pull` shows what changed in it. akg only displays it: commands in it are never run, the developer copies them.
 
 ### Plugins
 
@@ -157,4 +172,4 @@ claude plugin validate .                    # check manifests
 fixtures/try.sh extends-local-team          # copy fixtures to a temp dir, print the command to run
 ```
 
-`fixtures/` holds sandbox projects (no team, extending a local team repo, monorepo) to replay each flow by hand; see [fixtures/README.md](fixtures/README.md).
+`fixtures/` holds sandbox projects (no team, extending a local team repo, monorepo, empty folder for `/akg:source-init`) to replay each flow by hand; see [fixtures/README.md](fixtures/README.md).
