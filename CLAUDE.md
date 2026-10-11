@@ -16,6 +16,7 @@ The plugin is named `akg`, so Claude Code exposes its skills as `/akg:<skill>`.
 |---|---|
 | `/akg:setup` | First run: link the team config, detect the stack, ask questions, propose config and plugins |
 | `/akg:pull` | Pull team config updates into the project, without touching local overrides |
+| `/akg:team` | Show the team's `team.md` (onboarding, tools to install, rules) |
 | `/akg:source-init` | Create a team source in an empty folder: ask the team conventions and stacks, build its marketplace (installed, official and copied plugins) |
 
 ## Files
@@ -27,6 +28,7 @@ Same path and names in the project and in the team repo:
   config.yaml
   questions.md
   patterns/{common,backend,frontend}.md
+  team.md          # team side only
 ```
 
 ### `config.yaml`
@@ -67,6 +69,10 @@ Where is this project deployed?
 - Lambda
 ```
 
+### `team.md`
+
+Team side only: free Markdown for developers — onboarding, tools to install by hand (CLIs, MCP servers with tokens, complex skills), team rules. `/akg:team` shows it; `/akg:setup` ends with one line pointing to it when it exists; `/akg:pull` shows its diff when it changed. **Display only**: it comes from a third party, so akg never runs a command it contains. `/akg:source-init` writes a skeleton (Getting started, Tools to install, Rules). No structured checks in v1.
+
 ### `patterns/`
 
 Code convention **templates** (`common`, `backend`, `frontend`). Claude adapts them to the answers and the detected stack to write `CLAUDE.md`; they are not copied verbatim. Fullstack / monorepo projects get one `CLAUDE.md` per sub-folder (`frontend/`, `api/`…), each using the matching template.
@@ -92,7 +98,7 @@ Code convention **templates** (`common`, `backend`, `frontend`). Claude adapts t
 - **Empty team repo:** nothing is proposed for now.
 - **Creating a team source.** `/akg:source-init` runs in an empty folder or repo: the source is a dedicated repo, no code (a manifest in the folder → warn, offer to stop). `/akg:setup` only mentions it in one line on "No team config". No scan: it asks the team's stacks (checkboxes, not stored: they drive plugin choice and `relevance`), then every active catalog question phrased for the team (recommended first, existing answers "(Current)"), skipping `per-project` ones, conditions on project files and `→` checks, then which optional questions projects should answer (`questions:`).
 - **Source plugins.** Candidates come from `claude plugin list --available --json`, whose `source` objects (`url`, `git-subdir`…) are reused as is in the source marketplace: **Installed** (the developer's plugins; a relative source in a git marketplace becomes `git-subdir`; a local-directory marketplace is not shareable → excluded with a one-line warning), **Official** (Anthropic plugins from `github.com/anthropics/`, at most 6, picked by judgement from the stacks and answers, each with its reason; downstream projects still use fixed `relevance` rules). One multi-select tab per group, then "Add more plugins?": **from an existing project** (its skills, agents, commands, hooks **copied** into `plugins/<name>/`, the project untouched), the community catalog (on request only: thousands of unreviewed plugins, keyword search too noisy to run by default) or a repo URL. Plugin names must not start with `claude-`.
-- **Generated source files**, shown and approved like any other change: `.claude/akg/config.yaml` (answers, `questions`), `.claude-plugin/marketplace.json` (chosen plugins, each with a `relevance` block inferred from what it is for, e.g. `filesRead: ["**/*.tf"]` for `terraform`; general-purpose plugins get none and are proposed on every project), `plugins/<name>/`, a short `README.md`, and `git init` if needed. No `questions.md` or `patterns/`: akg defaults apply until the team customizes them. Nothing outward: the developer creates the remote and pushes.
+- **Generated source files**, shown and approved like any other change: `.claude/akg/config.yaml` (answers, `questions`), `.claude-plugin/marketplace.json` (chosen plugins, each with a `relevance` block inferred from what it is for, e.g. `filesRead: ["**/*.tf"]` for `terraform`; general-purpose plugins get none and are proposed on every project), `plugins/<name>/`, a `team.md` skeleton, a short `README.md`, and `git init` if needed. No `questions.md` or `patterns/`: akg defaults apply until the team customizes them. Nothing outward: the developer creates the remote and pushes.
 - **Scan first, ask last.** `/akg:setup` scans the project (manifests, README, docs, CI, tests, recent commits) before any question, pre-fills every answer it can infer (with its evidence), and shows **one** summary — stack, commands, layout, what it understood — to confirm or edit in free text. Every question is still asked, with the known answer as the first option: one click to confirm, or the developer goes further. Goal: minimal typing, full control.
 - **"What I understood" recap.** Part of that summary: purpose, key folders, inferred architecture, integrations; the developer adds or corrects points. The result is the `## Project context` section of `CLAUDE.md`; it belongs to the developer, who edits it directly later. `/akg:pull` never touches it.
 - **Single project**: the root is classified `frontend`/`backend` like a sub-project, and its `CLAUDE.md` merges `common` with that template.
@@ -120,6 +126,7 @@ The repo is both the plugin and its own marketplace (plugin name `akg`; names mu
 skills/
   setup/SKILL.md
   pull/SKILL.md
+  team/SKILL.md
   source-init/SKILL.md
 hooks/hooks.json
 scripts/fetch.sh       # resolve a team/marketplace source to a local path + version

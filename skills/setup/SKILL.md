@@ -105,3 +105,5 @@ Then, in at most 3 lines:
 - what was written;
 - the install command for any external-source plugin;
 - next step: commit `.claude/` and `CLAUDE.md` so teammates get the same setup; `/akg:pull` will pull team updates.
+
+If the team source has a `.claude/akg/team.md`, add one line: "The team has instructions (tools to install, rules): `/akg:team`."

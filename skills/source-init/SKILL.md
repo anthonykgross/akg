@@ -62,8 +62,21 @@ Prepare, without writing yet:
 1. **`.claude/akg/config.yaml`**: `questions` (only if it differs from the default list) and every answer at its key (format in rules.md). No `extends`, no `synced`.
 2. **`.claude-plugin/marketplace.json`**: `name` = `<folder name>` (no `claude-` prefix), `owner.name` from `git config user.name`, `plugins` = the chosen ones, each with `name`, `source` (`./plugins/<name>` for copied content, the reused object otherwise), `description`, and `relevance` (`topic` + `signals`, same shape as rules.md) when inferred. Existing file → merge: keep its entries, add the new ones, show conflicts on the same name.
 3. **`plugins/<name>/`** for each copied item: `.claude-plugin/plugin.json` (`name`, `description`) and the content in plugin layout — `skills/<skill>/`, `agents/<agent>.md`, `commands/<command>.md`, `hooks/hooks.json`. For hooks, copy the script too and rewrite its path from `$CLAUDE_PROJECT_DIR/…` to `${CLAUDE_PLUGIN_ROOT}/…`.
-4. **`README.md`** (only if absent), short: what this repo is, how a project uses it (`/akg:setup`, answer "Yes, I have one", give this repo's URL), how to add a plugin (an entry in `marketplace.json`) or a team question (`.claude/akg/questions.md`, format in the akg catalog).
-5. **`git init`** if `git rev-parse` says this is not a repo: listed in the review as an action.
+4. **`.claude/akg/team.md`** (only if absent): instructions developers read with `/akg:team`, shown at the end of `/akg:setup` and diffed by `/akg:pull`. A short skeleton for the maintainer to fill, with the stacks and the tracker answer as hints:
+   ```markdown
+   # <Team> — Claude Code
+
+   ## Getting started
+   <!-- What a new developer does first. -->
+
+   ## Tools to install
+   <!-- CLIs, MCP servers (with how to get a token), plugins or skills installed by hand. One line each: what, why, the command. -->
+
+   ## Rules
+   <!-- Team rules that are not in the questions. -->
+   ```
+5. **`README.md`** (only if absent), short: what this repo is, how a project uses it (`/akg:setup`, answer "Yes, I have one", give this repo's URL), how to add a plugin (an entry in `marketplace.json`), developer instructions (`.claude/akg/team.md`) or a team question (`.claude/akg/questions.md`, format in the akg catalog).
+6. **`git init`** if `git rev-parse` says this is not a repo: listed in the review as an action.
 
 ## 7. Review and write
 

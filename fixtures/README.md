@@ -7,8 +7,8 @@ Sandbox projects to replay each user flow by hand.
 | `no-team/` | Node CLI | none | Setup works without a team; 10 default questions (5 `workflow` + dependencies, local environment, architecture, secrets, ticket tracker; Claude autonomy as checkboxes; no Command environment, no Docker); answers "(Detected)" from the scan; no plugin proposed |
 | `extends-local-team/` | React app | `../team` | `../team` offered as team config; team values pre-selected "(Team)"; team `questions: [workflow, tracker, deploy]` → 7 questions (team Review and Deployment override akg's; Ticket tracker from the akg catalog; answering Jira asks its URL, project key and hosting in plain text); `code-review` + `react-conventions` proposed |
 | `monorepo/` | Vue + Go + Terraform | none (or `../team`) | Sub-project detection and per-folder `CLAUDE.md` |
-| `source/` | empty | — | `/akg:source-init`: stacks asked; questions phrased for the team, no "(Detected)", `per-project` ones and Command environment skipped; optional prefixes asked; Installed / Official tabs; "From an existing project" with `../monorepo`; `config.yaml`, `marketplace.json` (named `source`), `README.md`, `git init` proposed |
-| `team/` | — | — | Local team repo: marketplace with 3 plugins + `.claude/akg/` |
+| `source/` | empty | — | `/akg:source-init`: stacks asked; questions phrased for the team, no "(Detected)", `per-project` ones and Command environment skipped; optional prefixes asked; Installed / Official tabs; "From an existing project" with `../monorepo`; `config.yaml`, `marketplace.json` (named `source`), `team.md` skeleton, `README.md`, `git init` proposed |
+| `team/` | — | — | Local team repo: marketplace with 3 plugins + `.claude/akg/` (with `team.md`: `/akg:team` from `extends-local-team/` shows it; setup ends with a line pointing to it) |
 
 ## Usage
 

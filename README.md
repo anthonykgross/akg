@@ -22,6 +22,7 @@ A Claude Code plugin that sets up Claude Code on a project from an optional **te
 |---|---|
 | `/akg:setup` | Once per project: link the team config (or none), confirm what was detected and understood, answer the pre-filled questions, review the generated files. |
 | `/akg:source-init` | Once per team, in an empty folder: creates the team source (a dedicated repo, no code) — team conventions, then a plugin marketplace from your installed plugins, official Anthropic plugins fitting the team's stacks, and skills copied from existing projects. |
+| `/akg:team` | Anytime: shows the team's instructions (`team.md`: onboarding, tools to install, rules). Display only. |
 | `/akg:pull` | When the team config changes: applies team updates, shows conflicts with your local overrides ("team says X, project says Y"), proposes new questions and plugins. |
 
 When the project extends a team config, a new session shows one line when the team has a new version:
