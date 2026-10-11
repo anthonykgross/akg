@@ -23,7 +23,8 @@ Set up Claude Code on this project. Rules for layers, merging, marketplaces and 
 
 ## 1. Team config
 
-Ask with `AskUserQuestion`: "Extend a team config?" — options "No team config (Recommended)", "Yes, I have one" and "This project is the team source" (other projects will extend it: hand over to [source-init](${CLAUDE_PLUGIN_ROOT}/skills/source-init/SKILL.md) from its step 2, which runs the rest of this setup as team defaults). If a candidate is obvious (e.g. a sibling folder containing `.claude/akg/`), offer it as a fourth option with its path.
+Ask with `AskUserQuestion`: "Extend a team config?" — options "No team config (Recommended)" and "Yes, I have one". If a candidate is obvious (e.g. a sibling folder containing `.claude/akg/`), offer it as a third option with its path.
+On "No team config", say in one line: "To create one: `/akg:source-init` in an empty folder."
 On "Yes, I have one", ask in one plain-text message: "Where is it? (`github:owner/repo`, git URL, HTTPS URL to a `config.yaml`, or local path; add `#branch` to use a branch other than the default)" and wait for the reply.
 
 If given, run `${CLAUDE_PLUGIN_ROOT}/scripts/fetch.sh <source> <project root>` and keep `path`, `kind`, `version`. On failure, say it in one line and offer to retry or continue without a team.
