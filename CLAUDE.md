@@ -16,6 +16,7 @@ The plugin is named `akg`, so Claude Code exposes its skills as `/akg:<skill>`.
 |---|---|
 | `/akg:setup` | First run: link the team config, detect the stack, ask questions, propose config and plugins |
 | `/akg:pull` | Pull team config updates into the project, without touching local overrides |
+| `/akg:source-init` | Make this project the team source other projects `extends`: build its marketplace and package its plugins |
 
 ## Files
 
@@ -88,6 +89,9 @@ Code convention **templates** (`common`, `backend`, `frontend`). Claude adapts t
 - **Branch.** `extends: <source>#<ref>` pins a branch, tag or commit (Claude Code's own `owner/repo#ref` syntax). Each ref has its own cache; the reminder watches that ref; the team marketplace gets the same `ref`. Ignored, with a warning, on a single file.
 - **Remote single file** over HTTPS only, no auth in v1. Private team config → use a git repo (developer's git credentials).
 - **Empty team repo:** nothing is proposed for now.
+- **Making a project the team source.** `/akg:setup` step 1 offers a third option, "This project is the team source"; `/akg:source-init` does the same later on an already set-up project. The project becomes the team layer as is: other projects `extends` it (local dir or git repo). It gets no `extends` and no `synced`, and its `config.yaml` is not split: project-specific answers (`arch.style`, `env.runtime`, commands) are inherited too, harmless since every question is still asked downstream with the team value as first option.
+- **Source plugins.** One question (checkboxes, pre-filled by the scan) picks the marketplace plugins: plugins already enabled (`enabledPlugins`, `claude plugin list`), referenced at their original source, never copied; local content (`.claude/skills/`, `.claude/agents/`, `.claude/commands/`, hooks) **moved** into `plugins/<name>/`, and the project enables its own plugin instead (one location, no duplicate); extra plugins (GitHub repo or URL) asked afterwards in plain text. A plugin from a local or private marketplace (path on this machine) cannot be shared: excluded with a one-line warning. Plugin names must not start with `claude-`.
+- **Generated source files**, shown and approved like any other change: `.claude-plugin/marketplace.json` (chosen plugins, each with a `relevance` block inferred from the scan, e.g. `manifestDeps: ["react"]`, confirmed or removed by the developer; a plugin without `relevance` is proposed on every project, said in one line) and `plugins/<name>/`. No `questions.md` or `patterns/`: akg defaults apply until the team customizes them. Nothing outward: the developer commits and pushes, then gives the repo URL to teammates for their `extends`.
 - **Scan first, ask last.** `/akg:setup` scans the project (manifests, README, docs, CI, tests, recent commits) before any question, pre-fills every answer it can infer (with its evidence), and shows **one** summary — stack, commands, layout, what it understood — to confirm or edit in free text. Every question is still asked, with the known answer as the first option: one click to confirm, or the developer goes further. Goal: minimal typing, full control.
 - **"What I understood" recap.** Part of that summary: purpose, key folders, inferred architecture, integrations; the developer adds or corrects points. The result is the `## Project context` section of `CLAUDE.md`; it belongs to the developer, who edits it directly later. `/akg:pull` never touches it.
 - **Single project**: the root is classified `frontend`/`backend` like a sub-project, and its `CLAUDE.md` merges `common` with that template.
@@ -115,6 +119,7 @@ The repo is both the plugin and its own marketplace (plugin name `akg`; names mu
 skills/
   setup/SKILL.md
   pull/SKILL.md
+  source-init/SKILL.md
 hooks/hooks.json
 scripts/fetch.sh       # resolve a team/marketplace source to a local path + version
 scripts/snapshot.sh    # team config at a past version, for pull diffs

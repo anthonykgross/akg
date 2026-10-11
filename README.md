@@ -21,6 +21,7 @@ A Claude Code plugin that sets up Claude Code on a project from an optional **te
 | Command | When |
 |---|---|
 | `/akg:setup` | Once per project: link the team config (or none), confirm what was detected and understood, answer the pre-filled questions, review the generated files. |
+| `/akg:source-init` | To share this project's setup with the team: makes it the team source (its config is what others inherit), builds its plugin marketplace from the plugins it uses and its local skills, agents, commands and hooks. Also offered by `/akg:setup`. |
 | `/akg:pull` | When the team config changes: applies team updates, shows conflicts with your local overrides ("team says X, project says Y"), proposes new questions and plugins. |
 
 When the project extends a team config, a new session shows one line when the team has a new version:
