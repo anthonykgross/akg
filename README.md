@@ -25,6 +25,8 @@ A Claude Code plugin that sets up Claude Code on a project from an optional **te
 | `/akg:team` | Anytime: shows the team's instructions (`team.md`: onboarding, tools to install, rules). Display only. |
 | `/akg:pull` | When the team config changes: applies team updates, shows conflicts with your local overrides ("team says X, project says Y"), proposes new questions and plugins. |
 
+Tip: turn on **Prompt suggestions** in `/config` (or `"promptSuggestionEnabled": true` in your settings) to often get the answer ("1", "ok") as a grey suggestion: `Tab` to accept, `Enter` to send. Claude Code generates it, so akg can't guarantee its content.
+
 When the project extends a team config, a new session shows one line when the team has a new version:
 
 ```
