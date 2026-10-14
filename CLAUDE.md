@@ -71,7 +71,7 @@ Where is this project deployed?
 
 ### `team.md`
 
-Team side only: free Markdown for developers — onboarding, tools to install by hand (CLIs, MCP servers with tokens, complex skills), team rules. `/akg:team` shows it; `/akg:setup` ends with one line pointing to it when it exists; `/akg:pull` shows its diff when it changed. **Display only**: it comes from a third party, so akg never runs a command it contains. `/akg:source-init` writes a skeleton (Getting started, Tools to install, Rules). No structured checks in v1.
+Team side only: free Markdown for developers — onboarding, tools to install by hand (CLIs, MCP servers with tokens, complex skills), team rules. `/akg:team` shows it; `/akg:setup` ends with one line pointing to it when it exists; `/akg:pull` shows its diff when it changed. **Display only**: it comes from a third party, so akg never runs a command it contains. `/akg:source-init` writes a skeleton (Getting started, Tools to install, Rules). **Team tools check**: at the plugin step of `/akg:setup` (and in `/akg:pull` when `team.md` adds tools), akg reads its tools and checks them read-only (`which`, `claude mcp list`, `claude plugin list`; tokens and access requests are not checkable); missing ones are listed with their command quoted verbatim as `! <command>`, for the developer to run — akg never runs it, even after "ok". No format to follow: the tools are read from the free Markdown.
 
 ### `patterns/`
 

@@ -8,7 +8,7 @@ Sandbox projects to replay each user flow by hand.
 | `extends-local-team/` | React app | `../team` | `../team` offered as team config; team values pre-selected "(Team)"; team `questions: [workflow, tracker, deploy]` → 7 questions (team Review and Deployment override akg's; Ticket tracker from the akg catalog; answering Jira asks its URL, project key and hosting in plain text); `code-review` + `react-conventions` proposed |
 | `monorepo/` | Vue + Go + Terraform | none (or `../team`) | Sub-project detection and per-folder `CLAUDE.md` |
 | `source/` | empty | — | `/akg:source-init`: stacks asked; questions phrased for the team, no "(Detected)", `per-project` ones and Command environment skipped; optional prefixes asked; Installed / Official numbered list; "From an existing project" with `../monorepo`; `config.yaml`, `marketplace.json` (named `source`), `team.md` skeleton, `README.md`, `git init` proposed |
-| `team/` | — | — | Local team repo: marketplace with 3 plugins + `.claude/akg/` (with `team.md`: `/akg:team` from `extends-local-team/` shows it; setup ends with a line pointing to it) |
+| `team/` | — | — | Local team repo: marketplace with 3 plugins + `.claude/akg/` (with `team.md`: `/akg:team` from `extends-local-team/` shows it; setup lists missing team tools — `gh`, Atlassian MCP — with `! <command>`, skips `tflint` without `*.tf`, never runs them, and ends with a line pointing to it) |
 
 ## Usage
 

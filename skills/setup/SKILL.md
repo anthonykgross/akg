@@ -2,7 +2,7 @@
 name: setup
 description: First-run setup of Claude Code on a project with akg. Links an optional team config, detects the stack and commands, asks the team/project questions, then proposes CLAUDE.md, .claude/settings.json and plugins. Use when the user runs /akg:setup or asks to set up Claude Code for this project with akg.
 disable-model-invocation: true
-allowed-tools: Bash(${CLAUDE_PLUGIN_ROOT}/scripts/fetch.sh *), Bash(git log *), Bash(git branch *), Bash(git remote *), Bash(git rev-parse *), Bash(which *), Bash(claude mcp list), Bash(gh auth status)
+allowed-tools: Bash(${CLAUDE_PLUGIN_ROOT}/scripts/fetch.sh *), Bash(git log *), Bash(git branch *), Bash(git remote *), Bash(git rev-parse *), Bash(which *), Bash(claude mcp list), Bash(claude plugin list *), Bash(gh auth status)
 ---
 
 # /akg:setup
@@ -71,13 +71,21 @@ For **every** answer, store it at its `key` (format in rules.md), then apply its
 
 After the last question, show the **recap** (rules.md: Asking) and wait for an explicit yes.
 
-## 5. Plugins
+## 5. Plugins and team tools
 
-Collect marketplaces and evaluate plugin relevance (rules.md). If there is no marketplace, skip this step silently.
+Collect marketplaces and evaluate plugin relevance (rules.md). If the team source has a `team.md`, run the **team tools check** (rules.md). With no marketplace and no missing tool, skip this step silently.
 
 Propose them as one numbered list (rules.md: Asking, Approvals), grouped by marketplace: name and reason ("`react-conventions` — package.json depends on react"). Guess: all. Replies like "ok", "all but 2", "1 and 4", "none".
 
 "None", or no usable reply, means "no plugin": refused plugins go to `plugins.disabled`, then **continue to step 6** — choosing no plugin never ends the setup.
+
+Missing team tools follow the plugin list, under **Missing from team.md**, numbered on: name, why, the command to run yourself. They need no reply; say once that akg does not run them.
+
+```
+Missing from team.md — run them yourself, akg doesn't:
+4. gh — read issues and open PRs: ! brew install gh && gh auth login
+5. Atlassian MCP — read Jira tickets: ! claude mcp add --transport http atlassian https://mcp.atlassian.com/v1/sse
+```
 
 ## 6. Generate
 
@@ -97,4 +105,4 @@ Then, in at most 3 lines:
 - the install command for any external-source plugin;
 - next step: commit `.claude/` and `CLAUDE.md` so teammates get the same setup; `/akg:pull` will pull team updates.
 
-If the team source has a `.claude/akg/team.md`, add one line: "The team has instructions (tools to install, rules): `/akg:team`."
+If the team source has a `.claude/akg/team.md`, add one line: "The team has instructions (rules, onboarding): `/akg:team`." Repeat the commands of missing team tools, if any, so they are the last thing on screen.

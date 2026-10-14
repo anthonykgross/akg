@@ -147,7 +147,7 @@ Free Markdown for developers: onboarding, tools to install by hand (CLIs, MCP se
 - **gh** — read issues and open PRs: `brew install gh && gh auth login`
 ```
 
-Developers read it with `/akg:team`; `/akg:setup` points to it at the end, and `/akg:pull` shows what changed in it. akg only displays it: commands in it are never run, the developer copies them.
+Developers read it with `/akg:team`; `/akg:setup` points to it at the end, and `/akg:pull` shows what changed in it. `/akg:setup` (and `/akg:pull` when tools are added) also checks which listed tools are missing on your machine — CLI on the PATH, MCP server, plugin — and lists their commands as `! <command>` for you to run. akg never runs them itself.
 
 ### Plugins
 
