@@ -4,7 +4,7 @@ A Claude Code plugin that sets up Claude Code on a project from an optional **te
 
 - **Scans first**: manifests, README, CI, tests and recent commits — stack, test/lint/build commands, monorepo sub-projects.
 - **Shows what it understood**: purpose, key folders, architecture, integrations — and lets you add what matters ("edge functions are in `supabase/functions`", "we do DDD"). It lands in a `Project context` section of `CLAUDE.md` you own.
-- **Asks every question, pre-filled**: project type, Definition of Done, TDD, review level, Claude autonomy (checkboxes), dependencies, where commands run (host or container), local tools and shortcuts, architecture, secrets, ticket tracker by default; deployment, branching, tests, migrations, docs… on demand; plus your team's. The known answer comes first — "(Team)", "(Project)" or "(Detected)" with its source — then the other options and "I don't know"; lists of independent items are checkboxes. One click to confirm, or correct and go further.
+- **Asks every question, pre-filled**: project type, Definition of Done, TDD, review level, Claude autonomy (several picks), dependencies, where commands run (host or container), local tools and shortcuts, architecture, secrets, ticket tracker by default; deployment, branching, tests, migrations, docs… on demand; plus your team's. Asked as an interview, in plain text: answer 1 is akg's guess with its evidence (team, project or scan), the other options are numbered after it. Type "ok", a number, or your own words; a recap of every answer comes before anything is written.
 - **Generates**: `CLAUDE.md` (one per sub-project in a monorepo), `.claude/settings.json` (permissions from your answers, with `ask` on install commands and on destructive commands of detected tools such as `terraform apply`), and the plugins to enable.
 - **Speaks your language**: questions are asked in the language of the conversation; generated files stay in English unless you choose otherwise.
 - **Never imposes**: every file is shown before it is written; every value, setting and plugin is a proposal. Local choices always win over the team's.
@@ -105,7 +105,7 @@ A value set here is still asked in `/akg:setup`, pre-selected as "(Team)": the d
 
 ### `questions.md`
 
-Example: a team question of its own, a checkbox question, and an akg question removed.
+Example: a team question of its own, a multiple-choice question, and an akg question removed.
 
 ```markdown
 ## Feature flags
@@ -132,7 +132,7 @@ skip
 
 - `## Title` identifies a question: the same title replaces the akg (or team) one, `skip` removes it, a new title adds it.
 - `per-project` (optional, after `key`/`multiple`, or `(key: x.y, per-project)` on a follow-up) marks an answer that only makes sense for one project (its repo, its containers): `/akg:source-init` skips it, so each project answers it.
-- `multiple` (optional, after `key`) asks with checkboxes instead of a single choice (max 4 options); the answer is a list, nothing checked is a valid answer.
+- `multiple` (optional, after `key`) lets several options be picked; the answer is a list, "none" is a valid answer.
 - `key` is where the answer is stored in `config.yaml`. Required: a question without `key` is ignored, with a one-line warning.
 - `→` lines are instructions for Claude: under an option, applied when it is chosen; at the end, applied whatever the answer. They can ask a follow-up question, run a read-only check, or propose a `CLAUDE.md` line, a plugin or a setting — never install or change anything by themselves.
 

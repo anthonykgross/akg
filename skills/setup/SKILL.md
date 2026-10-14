@@ -12,22 +12,18 @@ Set up Claude Code on this project. Rules for layers, merging, marketplaces and 
 ## Ground rules
 
 - The user is a senior developer who dislikes ceremony: short messages, no preamble.
-- **Ask every question with the `AskUserQuestion` tool**, never as plain text: 2–4 options, recommended option first with "(Recommended)" in its label and the reason in its description. The tool always adds a free-text "Other" choice, so rough answers are fine. Group up to 4 related questions in one call (one tab each).
-- **Every option is a real answer.** Never offer an option whose meaning is "type it in Other". When a value can't be an option (a URL, a path, a list of corrections), ask a yes/no-style question first, then ask for the value in **one short plain-text message** and wait for the user's reply.
-- **Talk in the user's language** (the language of the conversation, or of their instructions): translate questions, options, labels ("(Recommended)", "I don't know"…) and summaries from the catalog. Generated files stay in English, unless the Language answer (`git.language`) says otherwise.
-- Explain domain jargon in one sentence when it appears.
+- **Ask as an interview** (rules.md: Asking): plain text, numbered answers with your guess first and its evidence, one question per message unless the guesses are evidence-backed facts to confirm, then a recap to approve. Never `AskUserQuestion`.
+- **Talk in the user's language** (the language of the conversation, or of their instructions): translate questions, options and summaries from the catalog. Generated files stay in English, unless the Language answer (`git.language`) says otherwise.
 - **Never write a file without showing it and getting approval.** Nothing is imposed: every value, setting and plugin is a proposal.
 - Never invent commands: use the ones the project declares.
-- **A dismissed or empty answer never ends the flow.** Take the conservative choice for that question (no plugin, keep the current value, skip the file), say it in one line, and continue with the next step. Stop only if the user explicitly asks to stop.
-- If `.claude/akg/config.yaml` already exists, say so and suggest `/akg:pull` instead; continue only if the user wants to redo the setup (then use the existing values as defaults).
+- If `.claude/akg/config.yaml` already exists, say so and suggest `/akg:pull` instead; continue only if the user wants to redo the setup (then use the existing values as guesses, source "project").
 
 ## 1. Team config
 
-Ask with `AskUserQuestion`: "Extend a team config?" — options "No team config (Recommended)" and "Yes, I have one". If a candidate is obvious (e.g. a sibling folder containing `.claude/akg/`), offer it as a third option with its path.
-On "No team config", say in one line: "To create one: `/akg:source-init` in an empty folder."
-On "Yes, I have one", ask in one plain-text message: "Where is it? (`github:owner/repo`, git URL, HTTPS URL to a `config.yaml`, or local path; add `#branch` to use a branch other than the default)" and wait for the reply.
+Ask: "Team config to extend? (`github:owner/repo`, git URL, HTTPS URL to a `config.yaml`, or local path; `#branch` for another branch)". Guess: an obvious candidate with its path (a sibling folder containing `.claude/akg/`), otherwise "none".
+On "none", say in one line: "To create one: `/akg:source-init` in an empty folder."
 
-If given, run `${CLAUDE_PLUGIN_ROOT}/scripts/fetch.sh <source> <project root>` and keep `path`, `kind`, `version`. On failure, say it in one line and offer to retry or continue without a team.
+If given, run `${CLAUDE_PLUGIN_ROOT}/scripts/fetch.sh <source> <project root>` and keep `path`, `kind`, `version`. On failure, say it in one line and ask for another location (guess: continue without a team).
 
 Load the three layers (akg → team → project) as described in rules.md.
 
@@ -44,11 +40,11 @@ Read before asking anything. Silently gather:
 Then **pre-fill every active question** of the merged list (rules.md: Active questions):
 - value set by the team or project config → that value, marked `team` / `project`;
 - otherwise, an answer you can infer from the scan **with clear evidence** → that value, with its evidence in a few words (one test file is not evidence of TDD; a weak hint is no pre-fill) ("tests in `src/**/*.test.ts`, 40 files" → TDD yes; "commits reference `SHOP-123`" → Jira);
-- otherwise, no pre-fill.
+- otherwise, no pre-fill: the guess will be the recommended option.
 
 ## 3. Confirm what was found
 
-Show **one** compact summary of what was detected and understood, then ask once with `AskUserQuestion`: "Looks right (Recommended)" / "Add or correct something". On the second, ask in one plain-text message what to add or correct (e.g. "edge functions are in `supabase/functions`", "we do DDD") and wait for the reply. Apply the edits and show the summary again until approved. Keep the user's wording for the points they add.
+Show **one** compact summary of what was detected and understood, ending with an **Unsure** line (what the scan could not tell, i.e. what the questions must surface), then ask: "Anything to add or correct?" (guess: no). The user replies "ok" or corrects in free text (e.g. "edge functions are in `supabase/functions`", "we do DDD"). Apply the edits and show the summary again until approved. Keep the user's wording for the points they add.
 
 ```
 Stack     Node 20, React Native 0.74, Supabase
@@ -59,34 +55,29 @@ Understood
 - Mobile app for …; screens in src/screens, API calls in src/services
 - Supabase: migrations in supabase/migrations, edge functions in supabase/functions
 - Architecture: feature folders (guess)
+
+Unsure    how thorough reviews are; whether tickets are tracked
 ```
 
 The approved "Understood" bullets (plus the user's additions) become the **`## Project context`** section of the root `CLAUDE.md`; points specific to a sub-project also go in that sub-project's `CLAUDE.md`.
 
 ## 4. Questions, pre-filled
 
-Ask **every active question**, whether or not its answer is already known — set by the team, by the project, or detected by the scan. The developer confirms in one click, or corrects / goes further. Use `AskUserQuestion`, batched by up to 4 (one tab per question; tab header = a short form of the `##` title, max 12 chars, abbreviated freely: "Def. of Done", "Autonomy"). A question whose `→` lines set defaults for other questions (**Project type**) is asked **alone, first**, so the next batches' recommendations follow its answer. Each question has at most 4 options, in this order:
-1. **The known answer, if any**, labelled "<answer> (Team)", "<answer> (Project)" or "<answer> (Detected)", with its source as description ("commits reference SHOP-123"). Add it as an option if it is not one of the question's own.
-2. **The question's other options**, recommended one first (the recommended one is first overall when nothing is known). When they don't all fit, drop first the ones the scan makes unlikely (Linear when commits reference `SHOP-123`), then the last ones; dropped options stay reachable through "Other". An option the scan makes irrelevant ("Run migrations" with no database) is not offered at all, in single and multiple choice alike.
-3. **"I don't know"** — always the last option.
+Ask **every active question**, whether or not its answer is already known — set by the team, by the project, or detected by the scan — as an interview (rules.md: Asking). The guess is the known answer with its source, otherwise the recommended option; the developer confirms with "ok", or corrects and goes further. **Project type** (its `→` lines set defaults for other questions) is asked **alone, first**, so the next guesses follow its answer. Then one question per message where the guess is only a recommendation, up to 3 per message where every guess has evidence.
 
-Options written as placeholders (`<detected shortcut>`) are filled from the scan, as the question's `→` lines say. A question marked `multiple` is asked with checkboxes (`multiSelect: true`) instead, as rules.md says: its own options only, known values marked in their label, no "I don't know"; nothing checked is a valid answer. If its `→` lines turn it into a single choice (Local environment with nothing detected), still no "I don't know": store `[]` for "Nothing special".
+Options written as placeholders (`<detected shortcut>`) are filled from the scan, as the question's `→` lines say. A question with no fixed options (e.g. the DoD) gets one proposed list built from the scan and the answers so far, as the guess.
 
-The tool adds "Other" for free text; interpret rough answers. A question with no fixed options (e.g. the DoD) gets 2 proposed versions built from the scan, the known one first.
+For **every** answer, store it at its `key` (format in rules.md), then apply its `→` instructions (rules.md): those under the chosen option, then the question-level ones. Follow-up questions they request (e.g. the Jira URL and project key) are asked right after their parent, all of one tool's values in one question, detected values as the guess ("Jira — SHOP (from commits), Cloud. Site URL?"). Keep checks read-only and report each result in one line ("Jira MCP: not configured — suggested"); collect the proposed `CLAUDE.md` lines, plugins and settings for step 6.
 
-"I don't know" means: keep the team value if there is one, otherwise use the recommended option. When the team sets the key, it is a default, not an override: nothing is written to the project `config.yaml`. When no team value exists, store the recommended value with a comment (`commits: conventional  # I don't know → recommended`), otherwise `/akg:pull` would ask again. Say which value was used in one line.
-
-For **every** answer, store it at its `key` (format in rules.md), then apply its `→` instructions (rules.md): those under the chosen option, then the question-level ones. Follow-up questions they request (e.g. the Jira URL and project key):
-- **every value detected by the scan** (URL in the README, `SHOP` from commits `SHOP-123`) → `AskUserQuestion` with the detected value(s) as real options ("SHOP (Detected)"), plus "I don't know";
-- **at least one value missing** → ask **all** of that tool's values in **one plain-text message**, showing the detected ones as defaults ("SHOP detected. Jira site URL? Cloud or Data Center?"), and wait for the reply. Never an `AskUserQuestion` whose option means "type it in Other". Several free values for the same tool go in the same message. Keep checks read-only and report each result in one line ("Jira MCP: not configured — suggested"); collect the proposed `CLAUDE.md` lines, plugins and settings for step 6.
+After the last question, show the **recap** (rules.md: Asking) and wait for an explicit yes.
 
 ## 5. Plugins
 
 Collect marketplaces and evaluate plugin relevance (rules.md). If there is no marketplace, skip this step silently.
 
-Ask with `AskUserQuestion` and `multiSelect: true`: one option per plugin (label = plugin name, description = its reason, e.g. "package.json depends on react"), plus a last option **"None"** so the user can explicitly pick no plugin. Recommended: all. With more than 3 plugins, split into several questions (tabs) by marketplace, each with its own "None".
+Propose them as one numbered list (rules.md: Asking, Approvals), grouped by marketplace: name and reason ("`react-conventions` — package.json depends on react"). Guess: all. Replies like "ok", "all but 2", "1 and 4", "none".
 
-Selecting "None", selecting nothing, or dismissing the question all mean "no plugin": refused plugins go to `plugins.disabled`, then **continue to step 6** — choosing no plugin never ends the setup.
+"None", or no usable reply, means "no plugin": refused plugins go to `plugins.disabled`, then **continue to step 6** — choosing no plugin never ends the setup.
 
 ## 6. Generate
 
@@ -99,7 +90,7 @@ Prepare, without writing yet:
 
 ## 7. Review and write
 
-For each file, ask with `AskUserQuestion`: options "Write (Recommended)", "Edit", "Skip", with the file content (or the diff, for an existing file) in the `preview` of the "Write" option. Up to 4 files per call, one tab each. Write only what is approved; on Edit, apply the requested change and ask again.
+Show each file's content (or the diff, for an existing file), then one numbered list of the files (rules.md: Asking, Approvals). Guess: write all. Replies like "ok", "skip 3", "edit 1: drop the Rules section". Write only what is approved; on edit, apply the change, show it, and ask again.
 
 Then, in at most 3 lines:
 - what was written;

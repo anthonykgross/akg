@@ -4,8 +4,8 @@
 Format, for every layer (akg → team → project):
 - `## Title` identifies a question. Same title in a higher layer replaces it; `skip` as its body removes it.
 - `key:` is where the answer is stored in `.claude/akg/config.yaml`. Required: a question without `key:` is ignored (with a one-line warning).
-- Options are suggestions; rough free-text answers are fine.
-- `multiple` (line after `key:`): checkboxes instead of a single choice, for independent options (max 4). The answer is a list; nothing checked = empty list.
+- Options are suggestions, shown as numbered answers; rough free-text answers are fine.
+- `multiple` (line after `key:`): several options can be picked, for independent options. The answer is a list; "none" = empty list.
   Use it for a list of independent actions or items; a question picking a level or one tool (strict/permissive, Jira/Linear) stays single choice.
 - `per-project` (line after `key:`, or after `multiple`): the answer only makes sense for one project (its containers, its shortcuts, its folders).
   `/akg:source-init` neither asks nor stores it, so projects extending the source answer it themselves. Same for a follow-up key marked `per-project` (`(key: x.y, per-project)`, or `x.y per-project` in a list of keys).
@@ -17,7 +17,7 @@ Format, for every layer (akg → team → project):
 Which questions are asked is set by `questions:` in config.yaml (a list of key prefixes, e.g. [workflow, tracker]).
 Without it: `workflow`, `deps`, `env`, `arch`, `security`, `tracker` + every question defined in the team/project questions.md. The rest of this catalog is off by default.
 - Options written as placeholders (`<detected …>`) are built from the project scan.
-Every active question is asked. A known answer (team, project or detected) is offered first; "I don't know" is offered last (single choice only).
+Every active question is asked, as an interview: Claude's guess first (the known answer — team, project or detected — with its evidence, otherwise the recommended option), the other options numbered after it. "I don't know" keeps the team value or the recommendation.
 -->
 
 ## Project type
@@ -111,7 +111,7 @@ Anything Claude should know to work on this project locally?
 - <detected task runner> (Detected)
 - Something to add
   → Ask in one plain-text message: CLIs, shortcuts, aliases and prerequisites (VPN, aws-vault, seed data…), and what each is for (key: env.notes, per-project).
-→ The options are built from the scan: up to 3 detected items, excluding the test/lint/build/dev commands already confirmed (Makefile targets such as `make up` / `make shell`, project CLIs such as `bin/console`, `artisan`, `manage.py` — dev tooling, never the binary the project itself ships (the `bin` of `package.json`, a Go `main`) — task runners such as `just` or a Taskfile, infrastructure tools whose files are in the repo such as `terraform` (`*.tf`), `kubectl`/`helm` (manifests, charts), `pulumi`), each labelled "(Detected)" with its source, then "Something to add". Nothing detected → single choice "Nothing special (recommended)" / "Something to add".
+→ The options are built from the scan: the detected items, excluding the test/lint/build/dev commands already confirmed (Makefile targets such as `make up` / `make shell`, project CLIs such as `bin/console`, `artisan`, `manage.py` — dev tooling, never the binary the project itself ships (the `bin` of `package.json`, a Go `main`) — task runners such as `just` or a Taskfile, infrastructure tools whose files are in the repo such as `terraform` (`*.tf`), `kubectl`/`helm` (manifests, charts), `pulumi`), each with its source, all in the guess, then "Something to add". Nothing detected → single choice "Nothing special (recommended)" / "Something to add".
 → If the commands run in a container (env.runtime): ask the same for inside the container (tools available only there, how to open a shell, which service).
 → Check read-only that the CLIs mentioned are on the PATH (or in the container image definition); report missing ones in one line.
 → Settings: for a detected tool with destructive commands, ask for them — `terraform apply/destroy`, `kubectl apply/delete`, `helm install/upgrade/uninstall`, `docker compose down -v`, `pulumi up/destroy` — even if nothing is checked (the tool is in the repo, so Claude may use it). Write these destructive-command rules in both forms, bare and with arguments (`Bash(terraform apply)` and `Bash(terraform apply *)`); other rules (install commands, push, rm) use the argument form only, so a bare `npm install` stays free. Read-only commands (`terraform plan`, `kubectl get`) stay free.

@@ -11,27 +11,27 @@ Create the team source in the current folder: a dedicated repo, with no code, th
 
 ## Ground rules
 
-Same as `/akg:setup`: short messages in the user's language (generated files stay in English); every question through the `AskUserQuestion` tool (2–4 options, recommended first, up to 4 per call); free values (paths, URLs, keywords) in one short plain-text message; **never write a file without showing it and getting approval**; nothing is imposed. A dismissed or empty answer never ends the flow: take the conservative choice (recommended option, no plugin), say it in one line, and continue.
+Same as `/akg:setup`: short messages in the user's language (generated files stay in English); asked as an interview (rules.md: Asking): plain text, numbered answers with a guess first, free values (paths, URLs, keywords) asked directly, never `AskUserQuestion`; **never write a file without showing it and getting approval**; nothing is imposed. A dismissed or empty answer never ends the flow: take the conservative choice (recommended option, no plugin), say it in one line, and continue.
 
 ## 1. Preconditions
 
-- The folder has code (a manifest: `package.json`, `pyproject.toml`, `go.mod`, `composer.json`, `pom.xml`, `Cargo.toml`…, or a `src/`) → say in one line that a team source is a dedicated repo without code, and ask: "Stop (Recommended)" (then suggest an empty folder, e.g. `../<org>-claude-team`) / "Continue here".
-- `.claude/akg/config.yaml` or `.claude-plugin/marketplace.json` already exists → this is already a source: its values are the known answers, labelled "(Current)", and its plugins stay; say so in one line.
+- The folder has code (a manifest: `package.json`, `pyproject.toml`, `go.mod`, `composer.json`, `pom.xml`, `Cargo.toml`…, or a `src/`) → say in one line that a team source is a dedicated repo without code, and ask: 1. Stop ← guess (then suggest an empty folder, e.g. `../<org>-claude-team`) · 2. Continue here.
+- `.claude/akg/config.yaml` or `.claude-plugin/marketplace.json` already exists → this is already a source: its values are the guesses, source "current", and its plugins stay; say so in one line.
 
 ## 2. Team stacks
 
-Ask with `AskUserQuestion`, `multiSelect: true`: "Which stacks does the team work with?" — up to 4 options per tab, two tabs: **Front & back** (Front-end JS/TS · Node back-end · PHP · Python) and **Others** (Go · Java/Kotlin · Mobile · Infra (Terraform, Kubernetes)). "Other" for the rest. Not stored: it only drives the plugin choice and their `relevance` (step 4).
+Ask, as a `multiple` question: "Which stacks does the team work with?" — 1. Front-end JS/TS · 2. Node back-end · 3. PHP · 4. Python · 5. Go · 6. Java/Kotlin · 7. Mobile · 8. Infra (Terraform, Kubernetes); free text for the rest. Guess from an existing marketplace's `relevance`, otherwise from the developer's installed plugins (`claude plugin list --json`: `typescript-lsp` → 1), with the reason; nothing to go on → 1, 2, saying it is only a starting point. Not stored: it only drives the plugin choice and their `relevance` (step 4).
 
 ## 3. Team conventions
 
 Ask every active question of the akg catalog (rules.md: Active questions, layer akg only, plus `questions.md` if it exists here), as `/akg:setup` step 4 does, with these differences:
 - Say once, before the first question, that these answers become the defaults of every project extending this source.
 - Phrase each question for the team ("Where does the team track tickets?").
-- No scan: options are the question's own, recommended first, then "I don't know" (stores the recommended value with a comment). A known answer from an existing `config.yaml` comes first, "(Current)".
+- No scan: the guess is the recommended option (or the current value of an existing `config.yaml`), so questions come one per message, except where the stacks make the guess obvious (Infra checked → container questions). "I don't know" stores the recommended value with a comment.
 - **Skip `per-project`** questions and follow-ups (rules.md), and questions whose condition depends on the project's files ("Ask only if a container setup is detected"); list them in one line ("Left to each project: command environment, local environment, architecture, tracker project, migrations").
 - `→` checks (CLI on the PATH, MCP configured) are skipped: they belong to each developer's setup. `→` CLAUDE.md and settings lines are not generated here: projects derive them from the answers.
 
-Then ask "Which optional questions should projects answer?" (`multiSelect: true`): the off-by-default catalog prefixes (`deploy`, `git`, `tests`, `db`, `docs`), split over two tabs. Checked ones are added to `questions:` (with the default prefixes) and asked right away like the others.
+Then ask, as a `multiple` question, "Which optional questions should projects answer?": the off-by-default catalog prefixes (`deploy`, `git`, `tests`, `db`, `docs`), each with a one-line description; guess: none. Checked ones are added to `questions:` (with the default prefixes) and asked right away like the others.
 
 ## 4. Candidate plugins (no questions)
 
@@ -46,12 +46,12 @@ Get the catalog once: `claude plugin list --available --json` (`installed`, and 
 
 ## 5. Pick the plugins
 
-Ask with `AskUserQuestion` and `multiSelect: true`, one tab per group — **Installed**, **Official** — at most 3 plugins per tab plus a last option **"None"** (split a group over two tabs when needed). Label = plugin name; description = the reason and the relevance ("TypeScript projects" / "every project"). Recommended: all. Empty group → no tab.
+Propose them as one numbered list (rules.md: Asking, Approvals), under two headings — **Installed**, **Official** — numbering running across both: name, reason, relevance ("TypeScript projects" / "every project"). Guess: all. Replies like "ok", "all but 4", "none". Empty group → no heading.
 
-Then ask: "Add more plugins?" — "No (Recommended)" / "From an existing project" / "Search the community catalog" / "From a repo". Repeat it after each addition until "No".
-- **From an existing project**: ask its path in one plain-text message. List its skills (`.claude/skills/<name>/`), agents (`.claude/agents/`), commands (`.claude/commands/`) and hooks whose script lives in that repo, and offer them (multi-select, plus "None"). Each one becomes a plugin `plugins/<name>/` here, **copied**; the project is never modified. Relevance from that project's stack, when the item is stack-specific.
-- **Search the community catalog**: ask keywords in one plain-text message, match them against `name` and `description` of the other `anthropic-plugin-directory` entries, offer the 4 best (multi-select, plus "None"). Say in one line that community plugins are not reviewed by Anthropic.
-- **From a repo**: ask `github:owner/repo` or git URLs in one plain-text message, one per line. Read each repo's `.claude-plugin/plugin.json` when reachable for its name and description; otherwise use the repo name.
+Then ask: "Add more plugins?" — 1. No ← guess · 2. From an existing project (give its path) · 3. Search the community catalog (give keywords) · 4. From a repo (give `github:owner/repo` or git URLs). The developer can give the value right away ("2 ../shop"). Repeat it after each addition until "no".
+- **From an existing project**: ask its path if not given. List its skills (`.claude/skills/<name>/`), agents (`.claude/agents/`), commands (`.claude/commands/`) and hooks whose script lives in that repo, and offer them as a numbered list, guess: all. Each one becomes a plugin `plugins/<name>/` here, **copied**; the project is never modified. Relevance from that project's stack, when the item is stack-specific.
+- **Search the community catalog**: ask keywords if not given, match them against `name` and `description` of the other `anthropic-plugin-directory` entries, offer the best matches as a numbered list, guess: none (unreviewed). Say in one line that community plugins are not reviewed by Anthropic.
+- **From a repo**: ask `github:owner/repo` or git URLs if not given, one per line. Read each repo's `.claude-plugin/plugin.json` when reachable for its name and description; otherwise use the repo name.
 
 Plugin names must not start with `claude-`: rename a copied one (`claude-review` → `review`) and say it.
 
@@ -75,16 +75,16 @@ Prepare, without writing yet:
    ## Rules
    <!-- Team rules that are not in the questions. -->
    ```
-5. **`README.md`** (only if absent), short: what this repo is, how a project uses it (`/akg:setup`, answer "Yes, I have one", give this repo's URL), how to add a plugin (an entry in `marketplace.json`), developer instructions (`.claude/akg/team.md`) or a team question (`.claude/akg/questions.md`, format in the akg catalog).
+5. **`README.md`** (only if absent), short: what this repo is, how a project uses it (`/akg:setup`, give this repo's URL as the team config), how to add a plugin (an entry in `marketplace.json`), developer instructions (`.claude/akg/team.md`) or a team question (`.claude/akg/questions.md`, format in the akg catalog).
 6. **`git init`** if `git rev-parse` says this is not a repo: listed in the review as an action.
 
 ## 7. Review and write
 
-Same as `/akg:setup` step 7: for each file, `AskUserQuestion` with "Write (Recommended)", "Edit", "Skip", the content or diff in the `preview` of "Write"; copied content shown as a list (`<project>/.claude/skills/react-forms/ → plugins/react-forms/skills/react-forms/`). Up to 4 per call.
+Same as `/akg:setup` step 7: each file's content or diff, copied content shown as a list (`<project>/.claude/skills/react-forms/ → plugins/react-forms/skills/react-forms/`), then one numbered list of the files, guess: write all.
 
 Run `claude plugin validate .` and report errors only.
 
 Then, in at most 3 lines:
 - what was written;
-- next step: commit and push (create the remote first if there is none), then each project runs `/akg:setup`, answers "Yes, I have one" and gives this repo's URL;
+- next step: commit and push (create the remote first if there is none), then each project runs `/akg:setup` and gives this repo's URL as the team config;
 - plugins with an external source are installed once per developer: `/akg:setup` gives the command.
