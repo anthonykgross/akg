@@ -1,6 +1,6 @@
 # Fixtures
 
-Sandbox projects to replay each user flow by hand.
+Sandbox projects to replay each user flow by hand. Run them in manual mode (`shift+tab` until auto mode is off): no permission prompt is expected before the write step.
 
 | Fixture | Stack | Team config | Checks |
 |---|---|---|---|

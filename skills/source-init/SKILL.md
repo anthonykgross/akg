@@ -2,7 +2,7 @@
 name: source-init
 description: Create a team source for akg in an empty folder or repo — a dedicated repo, no code, that projects extend. Asks the team conventions and the team's stacks, then builds a plugin marketplace from the developer's installed plugins, official Anthropic plugins fitting those stacks, and plugins copied from existing projects. Use when the user runs /akg:source-init or asks to create a team config for akg.
 disable-model-invocation: true
-allowed-tools: Bash(git rev-parse *), Bash(git config user.name), Bash(git remote *), Bash(claude plugin list *), Bash(claude plugin marketplace list *), Bash(claude plugin validate *)
+allowed-tools: Read(/${CLAUDE_PLUGIN_ROOT}/**), Bash(git rev-parse *), Bash(git config user.name), Bash(git remote *), Bash(claude plugin list *), Bash(claude plugin marketplace list *), Bash(claude plugin validate *)
 ---
 
 # /akg:source-init
@@ -11,9 +11,13 @@ Create the team source in the current folder: a dedicated repo, with no code, th
 
 ## Ground rules
 
+- **Gather everything in the first turn** (step 1): `allowed-tools` pre-approves only during the turn that started the skill; a later turn would prompt for each read and command.
+- **Stay within the pre-approved tools**: read files with Read and find them with Glob/Grep, never `cat`/`ls`/`find` in Bash; run each `allowed-tools` command on its own, never chained (`;`, `&&`, pipes) or prefixed with `cd`.
 Same as `/akg:setup`: short messages in the user's language (generated files stay in English); asked as an interview (rules.md: Asking): plain text, numbered answers with a guess first, free values (paths, URLs, keywords) asked directly, never `AskUserQuestion`; **never write a file without showing it and getting approval**; nothing is imposed. A dismissed or empty answer never ends the flow: take the conservative choice (recommended option, no plugin), say it in one line, and continue.
 
-## 1. Preconditions
+## 1. Gather and check (first turn)
+
+Before the first question, in this turn: read rules.md and `${CLAUDE_PLUGIN_ROOT}/defaults/questions.md`, list the folder, run `git rev-parse --is-inside-work-tree`, `git config user.name`, `claude plugin list --available --json` and `claude plugin marketplace list --json` (used in steps 2 and 4). Then:
 
 - The folder has code (a manifest: `package.json`, `pyproject.toml`, `go.mod`, `composer.json`, `pom.xml`, `Cargo.toml`…, or a `src/`) → say in one line that a team source is a dedicated repo without code, and ask: 1. Stop ← guess (then suggest an empty folder, e.g. `../<org>-claude-team`) · 2. Continue here.
 - `.claude/akg/config.yaml` or `.claude-plugin/marketplace.json` already exists → this is already a source: its values are the guesses, source "current", and its plugins stay; say so in one line.
@@ -24,7 +28,7 @@ Ask, as a `multiple` question: "Which stacks does the team work with?" — 1. Fr
 
 ## 3. Team conventions
 
-Ask every active question of the akg catalog (rules.md: Active questions, layer akg only, plus `questions.md` if it exists here), as `/akg:setup` step 4 does, with these differences:
+Ask every active question of the akg catalog (rules.md: Active questions, layer akg only, plus `questions.md` if it exists here), as `/akg:setup` step 5 does, with these differences:
 - Say once, before the first question, that these answers become the defaults of every project extending this source.
 - Phrase each question for the team ("Where does the team track tickets?").
 - No scan: the guess is the recommended option (or the current value of an existing `config.yaml`), so questions come one per message, except where the stacks make the guess obvious (Infra checked → container questions). "I don't know" stores the recommended value with a comment.
@@ -35,7 +39,7 @@ Then ask, as a `multiple` question, "Which optional questions should projects an
 
 ## 4. Candidate plugins (no questions)
 
-Get the catalog once: `claude plugin list --available --json` (`installed`, and `available`: `pluginId`, `name`, `description`, `marketplaceName`, `source`) and `claude plugin marketplace list --json`. A marketplace entry here reuses the plugin's `source` object **as is** (`url`, `git-subdir`, `github`…).
+Use the catalog gathered in step 1: `claude plugin list --available --json` (`installed`, and `available`: `pluginId`, `name`, `description`, `marketplaceName`, `source`) and `claude plugin marketplace list --json`. A marketplace entry here reuses the plugin's `source` object **as is** (`url`, `git-subdir`, `github`…).
 
 - **Installed**: plugins the developer has installed (`installed`), except akg itself.
   - `source` is an object → reuse it.
@@ -80,7 +84,7 @@ Prepare, without writing yet:
 
 ## 7. Review and write
 
-Same as `/akg:setup` step 7: each file's content or diff, copied content shown as a list (`<project>/.claude/skills/react-forms/ → plugins/react-forms/skills/react-forms/`), then one numbered list of the files, guess: write all.
+Same as `/akg:setup` step 8: each file's content or diff, copied content shown as a list (`<project>/.claude/skills/react-forms/ → plugins/react-forms/skills/react-forms/`), then one numbered list of the files, guess: write all.
 
 Run `claude plugin validate .` and report errors only.
 

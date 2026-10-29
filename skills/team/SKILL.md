@@ -2,7 +2,7 @@
 name: team
 description: Show the team's instructions (team.md from the team source): onboarding, tools and skills to install by hand, team rules. Display only. Use when the user runs /akg:team or asks what the team expects, what to install, or the team's rules.
 disable-model-invocation: true
-allowed-tools: Bash(${CLAUDE_PLUGIN_ROOT}/scripts/fetch.sh *)
+allowed-tools: Read(/${CLAUDE_PLUGIN_ROOT}/**), Read(~/.cache/akg/**), Bash(${CLAUDE_PLUGIN_ROOT}/scripts/fetch.sh *)
 ---
 
 # /akg:team
