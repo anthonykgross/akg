@@ -18,6 +18,75 @@ A Claude Code plugin that sets up Claude Code on a project from an optional **te
 /plugin install akg@akg
 ```
 
+## Quickstart
+
+A typical case: you open a React app, and your team keeps its Claude Code conventions in a team config (here the folder `../team`; usually a repo such as `github:acme/claude-team`). To replay it yourself: `fixtures/try.sh extends-local-team`.
+
+**1. Run `/akg:setup`.** akg reads the project and the team config before asking anything, then asks which team config to extend (its guess: the one it found) and shows what it understood. Reply `ok`, or correct it in your own words.
+
+![Team config question and the scan summary](docs/quickstart-1-summary.png)
+
+**2. Answer the questions.** Answer 1 is always akg's guess, with where it comes from. Values the team already sets come up to three at a time, to confirm. Reply `ok`, a number (`2`, `B2`), or free text.
+
+![Project type, then Definition of Done, TDD and review level from the team](docs/quickstart-2-questions.png)
+
+**3. Approve the recap, then the plugins.** Each answer shows its source (`team` or `you`). Plugins come from the team's marketplace, each with the reason it fits; the others are left out.
+
+![Recap of the answers, then the team plugins that fit the project](docs/quickstart-3-recap.png)
+
+**4. Review the files.** Each one is shown before it is written. `CLAUDE.md` (excerpt; the conventions come from the team's frontend template):
+
+```markdown
+## Workflow
+1. Write a failing test first, then the code, then refactor.
+2. Implement the change.
+3. Review: re-read the diff, run `npm test` and `npm run lint` before handing over.
+4. Done when:
+   - [ ] `npm test` passes
+   - [ ] `npm run lint` is clean
+   - [ ] docs updated (README)
+
+## Conventions
+- Components in PascalCase, one component per file.
+- Every component has a test next to it (`Foo.test.jsx`).
+```
+
+`.claude/settings.json`:
+
+```json
+{
+  "permissions": {
+    "allow": ["Bash(npm test)", "Bash(npm test *)", "Bash(npm run lint)", "Bash(npm run lint *)"],
+    "ask": ["Bash(git commit *)", "Bash(git push *)", "Bash(rm *)"],
+    "deny": ["Read(**/.env*)", "Bash(git push --force *)", "Bash(git push * main)"]
+  },
+  "extraKnownMarketplaces": { "acme-team": { "source": { "source": "directory", "path": "../team" } } },
+  "enabledPlugins": { "code-review@acme-team": true, "react-conventions@acme-team": true }
+}
+```
+
+`.claude/akg/config.yaml`, with only what differs from the team:
+
+```yaml
+extends: ../team
+synced: 599ec89…
+workflow:
+  type: product
+  autonomy: []
+tracker:
+  tool: jira
+  url: https://acme.atlassian.net
+  project: ACME
+  hosting: cloud
+deploy:
+  target: kubernetes
+  namespace: frontend
+```
+
+**5. Commit** `.claude/` and `CLAUDE.md`: teammates get the same setup. When the team changes its config, the next session shows `akg: team config updated — /akg:pull`.
+
+No team config yet? Answer `None` at step 1: the same flow runs on akg's defaults. To create one for your team: `/akg:source-init` in an empty folder.
+
 ## Usage
 
 | Command | When |
