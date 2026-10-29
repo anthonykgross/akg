@@ -144,6 +144,7 @@ fixtures/              # sandbox projects for manual testing
   team/                # local team repo (marketplace + .claude/akg/)
   try.sh               # copy fixtures to a temp dir, print the command to run
 evals/                 # claude plugin eval suite: one case per flow, run.sh, lib/fixture.sh scaffold
+docs/                  # README demo GIF and quickstart screenshots: a real /akg:setup run on fixtures/extends-local-team
 README.md
 ```
 
