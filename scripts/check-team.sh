@@ -51,7 +51,8 @@ esac
 state_dir="${XDG_CACHE_HOME:-$HOME/.cache}/akg/notified"
 state="$state_dir/$(printf '%s' "$project" | sed -E 's#[^A-Za-z0-9._-]+#-#g')"
 [ "$(cat "$state" 2>/dev/null)" = "$latest" ] && exit 0
-mkdir -p "$state_dir" && printf '%s\n' "$latest" > "$state"
+# A read-only cache only means the reminder comes back next session.
+{ mkdir -p "$state_dir" && printf '%s\n' "$latest" > "$state"; } 2>/dev/null
 
 # JSON systemMessage: shown to the user only, not added to Claude's context.
 printf '{"systemMessage":"akg: team config updated — /akg:pull"}\n'

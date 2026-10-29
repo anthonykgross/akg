@@ -145,6 +145,7 @@ fixtures/              # sandbox projects for manual testing
   source/              # empty folder for /akg:source-init
   team/                # local team repo (marketplace + .claude/akg/)
   try.sh               # copy fixtures to a temp dir, print the command to run
+tests/check-team.sh    # shell tests of the SessionStart reminder (local, git, #ref, HTTP file, offline)
 evals/                 # claude plugin eval suite: one case per flow, run.sh, lib/fixture.sh scaffold
 docs/                  # quickstart.md (team repo, then project setup, with diagrams), its screenshots and the README demo GIF
 README.md
@@ -155,4 +156,5 @@ LICENSE                # MIT
 
 - Load: `claude --plugin-dir <repo>`; reload after edits: `/reload-plugins`; check: `claude plugin validate .`.
 - Replay each user flow by hand on `fixtures/`, in manual mode.
+- Hook: `tests/check-team.sh` (the SessionStart reminder; evals can't start a session).
 - Automated: `evals/run.sh` (`claude plugin eval`, one case per flow on `fixtures/`; see `evals/README.md`). Needs the Bash sandbox (`bubblewrap`, `socat`, and on Ubuntu the AppArmor user-namespace setting). Evals have no simulated user: full cases tell Claude to take each guess as the answer.

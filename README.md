@@ -180,9 +180,11 @@ akg proposes a plugin from your marketplaces when:
 ```bash
 claude plugin validate .                    # check manifests
 fixtures/try.sh extends-local-team          # copy fixtures to a temp dir, print the command to run
+evals/run.sh --runs 1                       # automated replay of every flow (claude plugin eval)
+tests/check-team.sh                         # SessionStart reminder tests
 ```
 
-`fixtures/` holds sandbox projects (no team, extending a local team repo, monorepo, empty folder for `/akg:source-init`) to replay each flow by hand; see [fixtures/README.md](fixtures/README.md).
+`fixtures/` holds sandbox projects (no team, extending a local team repo, monorepo, empty folder for `/akg:source-init`) to replay each flow by hand; see [fixtures/README.md](fixtures/README.md). `evals/` replays them automatically, one case per flow; see [evals/README.md](evals/README.md).
 
 ## License
 

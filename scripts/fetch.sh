@@ -68,7 +68,8 @@ case "$src" in
       if [ "$(git -C "$p" rev-parse --show-toplevel 2>/dev/null)" = "$p" ] \
          && v="$(git -C "$p" rev-parse --verify -q HEAD)"; then :
       else
-        v="$(find "$p/.claude/akg" "$p/.claude-plugin" -type f 2>/dev/null | hash_files)"
+        # A team folder may have no .claude-plugin/: find then fails, which pipefail must not see.
+        v="$( { find "$p/.claude/akg" "$p/.claude-plugin" -type f 2>/dev/null || true; } | hash_files)"
       fi
       echo "kind=dir"; echo "path=$p"; echo "version=$v"
     else
