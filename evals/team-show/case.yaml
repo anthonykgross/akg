@@ -7,9 +7,10 @@ execution:
 context:
   scaffold_script: scaffold.sh
 graders:
-  - name: shows-rules
+  # Prose may be translated to the user's language; commands stay verbatim. glow is new in team v2.
+  - name: shows-current-version
     type: regex
-    pattern: "Every PR links its Jira ticket"
+    pattern: "brew install glow"
   - name: keeps-commands-verbatim
     type: regex
     pattern: "claude mcp add --transport http atlassian https://mcp\\.atlassian\\.com/v1/sse"

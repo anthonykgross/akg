@@ -18,7 +18,7 @@ Needs the Bash sandbox: on Linux, `bubblewrap` and `socat`; on Ubuntu, also lift
 | `setup-full-team` | `extends`/`synced`, team values not copied, team plugins enabled by relevance, team template in `CLAUDE.md`, missing team tools listed and never run |
 | `setup-full-monorepo` | One `CLAUDE.md` per sub-project, none for `infra/`, `terraform apply/destroy` asked in both forms |
 | `pull-team-change` | Team v2 vs v1: conflict kept local, DoD and `deny` applied, `## Project context` untouched, `team.md` diff, new tool listed |
-| `team-show` | `team.md` shown verbatim, nothing run or written |
+| `team-show` | `team.md` shown (prose may be translated, commands verbatim), nothing run or written |
 | `source-init-full` | Source files written, no `extends` or `per-project` answers, `team.md` skeleton, no `questions.md` |
 
 How it works:
