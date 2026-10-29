@@ -120,9 +120,11 @@ Code convention **templates** (`common`, `backend`, `frontend`). Claude adapts t
 The repo is both the plugin and its own marketplace (plugin name `akg`; names must not start with `claude-`).
 
 ```
+.claude/CLAUDE.md      # this file (here, not at the root: a root CLAUDE.md is not plugin context)
 .claude-plugin/
   plugin.json
   marketplace.json     # single entry, "source": "./"
+  icon.png             # listing icon, 1024x1024
 skills/
   setup/SKILL.md
   pull/SKILL.md
@@ -146,6 +148,7 @@ fixtures/              # sandbox projects for manual testing
 evals/                 # claude plugin eval suite: one case per flow, run.sh, lib/fixture.sh scaffold
 docs/                  # README demo GIF and quickstart screenshots: a real /akg:setup run on fixtures/extends-local-team
 README.md
+LICENSE                # MIT
 ```
 
 ## Testing

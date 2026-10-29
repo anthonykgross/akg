@@ -248,3 +248,7 @@ fixtures/try.sh extends-local-team          # copy fixtures to a temp dir, print
 ```
 
 `fixtures/` holds sandbox projects (no team, extending a local team repo, monorepo, empty folder for `/akg:source-init`) to replay each flow by hand; see [fixtures/README.md](fixtures/README.md).
+
+## License
+
+MIT — see [LICENSE](LICENSE).
