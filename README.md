@@ -2,6 +2,8 @@
 
 A Claude Code plugin that sets up Claude Code on a project from an optional **team config**, by asking a few questions about the project, then keeps it in sync with the team.
 
+![/akg:setup on a React project extending a team config: summary, pre-filled questions, recap, plugins](docs/akg-setup.gif)
+
 - **Scans first**: manifests, README, CI, tests and recent commits — stack, test/lint/build commands, monorepo sub-projects.
 - **Shows what it understood**: purpose, key folders, architecture, integrations — and lets you add what matters ("edge functions are in `supabase/functions`", "we do DDD"). It lands in a `Project context` section of `CLAUDE.md` you own.
 - **Asks every question, pre-filled**: project type, Definition of Done, TDD, review level, Claude autonomy (several picks), dependencies, where commands run (host or container), local tools and shortcuts, architecture, secrets, ticket tracker by default; deployment, branching, tests, migrations, docs… on demand; plus your team's. Asked as an interview, in plain text: answer 1 is akg's guess with its evidence (team, project or scan), the other options are numbered after it. Type "ok", a number, or your own words; a recap of every answer comes before anything is written.
