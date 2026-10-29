@@ -1,0 +1,78 @@
+schema_version: "1.1"
+name: setup-full-team
+tags: [setup, full, team]
+execution:
+  max_turns: 80
+  timeout_seconds: 900
+  allowed_tools: [Read, Glob, Grep, Skill]
+context:
+  scaffold_script: scaffold.sh
+graders:
+  - name: writes-config
+    type: regex
+    target: trace
+    pattern: '"file_path":"[^"]*/\.claude/akg/config\.yaml"(?:,"\w+":(?:"(?:[^"\\]|\\.)*"|true|false))*?,"(?:content|new_string)":"'
+  - name: extends-team
+    type: regex
+    target: trace
+    pattern: '"file_path":"[^"]*/\.claude/akg/config\.yaml"(?:,"\w+":(?:"(?:[^"\\]|\\.)*"|true|false))*?,"(?:content|new_string)":"(?:(?:[^"\\]|\\.)*\\n)?extends: (?:\\"|'')?\.\./team'
+  # Team v1 is committed with fixed dates, so its SHA is stable.
+  - name: synced-team-sha
+    type: regex
+    target: trace
+    pattern: '"file_path":"[^"]*/\.claude/akg/config\.yaml"(?:,"\w+":(?:"(?:[^"\\]|\\.)*"|true|false))*?,"(?:content|new_string)":"(?:(?:[^"\\]|\\.)*\\n)?synced: (?:\\"|'')?[0-9a-f]{40}'
+  # Team values are not copied into the project file: only overrides.
+  - name: team-values-not-copied
+    type: regex
+    target: trace
+    pattern: '"file_path":"[^"]*/\.claude/akg/config\.yaml"(?:,"\w+":(?:"(?:[^"\\]|\\.)*"|true|false))*?,"(?:content|new_string)":"(?:(?:[^"\\]|\\.)*\\n)?\s*tdd:'
+    match: not_contains
+  - name: enables-code-review
+    type: regex
+    target: trace
+    pattern: '"file_path":"[^"]*/\.claude/settings\.json"(?:,"\w+":(?:"(?:[^"\\]|\\.)*"|true|false))*?,"(?:content|new_string)":"(?:[^"\\]|\\.)*code-review@acme-team'
+  - name: enables-react-conventions
+    type: regex
+    target: trace
+    pattern: '"file_path":"[^"]*/\.claude/settings\.json"(?:,"\w+":(?:"(?:[^"\\]|\\.)*"|true|false))*?,"(?:content|new_string)":"(?:[^"\\]|\\.)*react-conventions@acme-team'
+  - name: skips-terraform-helpers
+    type: regex
+    target: trace
+    pattern: '"file_path":"[^"]*/\.claude/settings\.json"(?:,"\w+":(?:"(?:[^"\\]|\\.)*"|true|false))*?,"(?:content|new_string)":"(?:[^"\\]|\\.)*terraform-helpers'
+    match: not_contains
+  - name: team-marketplace-known
+    type: regex
+    target: trace
+    pattern: '"file_path":"[^"]*/\.claude/settings\.json"(?:,"\w+":(?:"(?:[^"\\]|\\.)*"|true|false))*?,"(?:content|new_string)":"(?:[^"\\]|\\.)*extraKnownMarketplaces'
+  - name: team-deny-merged
+    type: regex
+    target: trace
+    pattern: '"file_path":"[^"]*/\.claude/settings\.json"(?:,"\w+":(?:"(?:[^"\\]|\\.)*"|true|false))*?,"(?:content|new_string)":"(?:[^"\\]|\\.)*Read\(\*\*/\.env\*\)'
+  - name: claude-md-team-template
+    type: regex
+    target: { source: file, path: CLAUDE.md }
+    pattern: "PascalCase"
+  - name: claude-md-team-dod
+    type: regex
+    target: { source: file, path: CLAUDE.md }
+    pattern: "docs"
+    flags: i
+  # team.md is display only: its install commands are listed, never run.
+  - name: never-runs-team-commands
+    type: tool_used
+    tool: Bash
+    input_match: "mcp add|brew install"
+    min: 0
+    max: 0
+  - name: lists-missing-mcp-command
+    type: regex
+    target: trace
+    pattern: "! claude mcp add --transport http atlassian"
+  - name: points-to-team
+    type: regex
+    pattern: "/akg:team"
+  - name: no-ask-user-question
+    type: tool_used
+    tool: AskUserQuestion
+    min: 0
+    max: 0

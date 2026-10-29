@@ -1,0 +1,77 @@
+schema_version: "1.1"
+name: setup-full-no-team
+tags: [setup, full]
+execution:
+  max_turns: 80
+  timeout_seconds: 900
+  allowed_tools: [Read, Glob, Grep, Skill]
+context:
+  scaffold_script: scaffold.sh
+graders:
+  - name: writes-claude-md
+    type: file_exists
+    path: CLAUDE.md
+  - name: writes-settings
+    type: regex
+    target: trace
+    pattern: '"file_path":"[^"]*/\.claude/settings\.json"(?:,"\w+":(?:"(?:[^"\\]|\\.)*"|true|false))*?,"(?:content|new_string)":"'
+  - name: writes-config
+    type: regex
+    target: trace
+    pattern: '"file_path":"[^"]*/\.claude/akg/config\.yaml"(?:,"\w+":(?:"(?:[^"\\]|\\.)*"|true|false))*?,"(?:content|new_string)":"'
+  - name: no-extends-without-team
+    type: regex
+    target: trace
+    pattern: '"file_path":"[^"]*/\.claude/akg/config\.yaml"(?:,"\w+":(?:"(?:[^"\\]|\\.)*"|true|false))*?,"(?:content|new_string)":"(?:(?:[^"\\]|\\.)*\\n)?(extends|synced):'
+    match: not_contains
+  - name: config-has-answers
+    type: regex
+    target: trace
+    pattern: '"file_path":"[^"]*/\.claude/akg/config\.yaml"(?:,"\w+":(?:"(?:[^"\\]|\\.)*"|true|false))*?,"(?:content|new_string)":"(?:[^"\\]|\\.)*tdd:'
+  - name: claude-md-declared-commands
+    type: regex
+    target: { source: file, path: CLAUDE.md }
+    pattern: "npm test"
+  - name: claude-md-project-context
+    type: regex
+    target: { source: file, path: CLAUDE.md }
+    pattern: "## Project context"
+  # Test and lint commands are allowed in both forms.
+  - name: allow-test-bare
+    type: regex
+    target: trace
+    pattern: '"file_path":"[^"]*/\.claude/settings\.json"(?:,"\w+":(?:"(?:[^"\\]|\\.)*"|true|false))*?,"(?:content|new_string)":"(?:[^"\\]|\\.)*Bash\(npm test\)\\"'
+  - name: allow-test-args
+    type: regex
+    target: trace
+    pattern: '"file_path":"[^"]*/\.claude/settings\.json"(?:,"\w+":(?:"(?:[^"\\]|\\.)*"|true|false))*?,"(?:content|new_string)":"(?:[^"\\]|\\.)*Bash\(npm test \*\)'
+  - name: deny-env-read
+    type: regex
+    target: trace
+    pattern: '"file_path":"[^"]*/\.claude/settings\.json"(?:,"\w+":(?:"(?:[^"\\]|\\.)*"|true|false))*?,"(?:content|new_string)":"(?:[^"\\]|\\.)*Read\(\*\*/\.env\*\)'
+  - name: install-asks
+    type: regex
+    target: trace
+    pattern: '"file_path":"[^"]*/\.claude/settings\.json"(?:,"\w+":(?:"(?:[^"\\]|\\.)*"|true|false))*?,"(?:content|new_string)":"(?:[^"\\]|\\.)*Bash\(npm install \*\)'
+  - name: no-plugins-without-marketplace
+    type: regex
+    target: trace
+    pattern: '"file_path":"[^"]*/\.claude/settings\.json"(?:,"\w+":(?:"(?:[^"\\]|\\.)*"|true|false))*?,"(?:content|new_string)":"(?:[^"\\]|\\.)*enabledPlugins'
+    match: not_contains
+  - name: gitignore-env
+    type: regex
+    target: { source: file, path: .gitignore }
+    pattern: "\\.env\\*"
+  - name: no-ask-user-question
+    type: tool_used
+    tool: AskUserQuestion
+    min: 0
+    max: 0
+  - name: claude-md-quality
+    type: llm
+    focus: { source: file, path: CLAUDE.md }
+    criteria: >-
+      A short CLAUDE.md for a small Node CLI: a Project context section describing the greet CLI,
+      the declared commands (npm test, npm run lint) and no invented ones, a workflow with a
+      Definition of Done checklist, and rules (ask before adding dependencies, never commit secrets).
+      No placeholder like {{...}} is left.

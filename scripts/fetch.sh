@@ -19,7 +19,6 @@ ref=""
 case "$src" in *#*) ref="${src##*#}"; src="${src%#*}" ;; esac
 base="${2:-$PWD}"
 cache="${XDG_CACHE_HOME:-$HOME/.cache}/akg"
-mkdir -p "$cache"
 
 slug() { printf '%s' "$1" | sed -E 's#^[a-z+]+:/*##; s#[^A-Za-z0-9._-]+#-#g; s#-+$##'; }
 hash_files() { sort | xargs -r cat | sha256sum | cut -c1-12; }

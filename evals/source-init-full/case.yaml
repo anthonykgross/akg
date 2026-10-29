@@ -1,0 +1,52 @@
+schema_version: "1.1"
+name: source-init-full
+tags: [source-init, full]
+execution:
+  max_turns: 80
+  timeout_seconds: 900
+  allowed_tools: [Read, Glob, Grep, Skill]
+context:
+  scaffold_script: scaffold.sh
+graders:
+  - name: writes-config
+    type: regex
+    target: trace
+    pattern: '"file_path":"[^"]*/\.claude/akg/config\.yaml"(?:,"\w+":(?:"(?:[^"\\]|\\.)*"|true|false))*?,"(?:content|new_string)":"'
+  - name: writes-marketplace
+    type: file_exists
+    path: .claude-plugin/marketplace.json
+  - name: writes-team-md
+    type: regex
+    target: trace
+    pattern: '"file_path":"[^"]*/\.claude/akg/team\.md"(?:,"\w+":(?:"(?:[^"\\]|\\.)*"|true|false))*?,"(?:content|new_string)":"'
+  - name: writes-readme
+    type: file_exists
+    path: README.md
+  - name: no-extends-in-source
+    type: regex
+    target: trace
+    pattern: '"file_path":"[^"]*/\.claude/akg/config\.yaml"(?:,"\w+":(?:"(?:[^"\\]|\\.)*"|true|false))*?,"(?:content|new_string)":"(?:(?:[^"\\]|\\.)*\\n)?(extends|synced):'
+    match: not_contains
+  # per-project answers are neither asked nor stored in a source.
+  - name: no-per-project-answers
+    type: regex
+    target: trace
+    pattern: '"file_path":"[^"]*/\.claude/akg/config\.yaml"(?:,"\w+":(?:"(?:[^"\\]|\\.)*"|true|false))*?,"(?:content|new_string)":"(?:(?:[^"\\]|\\.)*\\n)?\s*(style|runtime|tools):'
+    match: not_contains
+  - name: config-has-team-answers
+    type: regex
+    target: trace
+    pattern: '"file_path":"[^"]*/\.claude/akg/config\.yaml"(?:,"\w+":(?:"(?:[^"\\]|\\.)*"|true|false))*?,"(?:content|new_string)":"(?:[^"\\]|\\.)*tdd:'
+  - name: team-md-skeleton
+    type: regex
+    target: trace
+    pattern: '"file_path":"[^"]*/\.claude/akg/team\.md"(?:,"\w+":(?:"(?:[^"\\]|\\.)*"|true|false))*?,"(?:content|new_string)":"(?:[^"\\]|\\.)*## Tools to install'
+  - name: marketplace-named-after-folder
+    type: regex
+    target: { source: file, path: .claude-plugin/marketplace.json }
+    pattern: "\"name\":\\s*\"cwd\""
+  - name: no-questions-or-patterns
+    type: regex
+    target: trace
+    pattern: '"file_path":"[^"]*/\.claude/akg/questions\.md"(?:,"\w+":(?:"(?:[^"\\]|\\.)*"|true|false))*?,"(?:content|new_string)":"'
+    match: not_contains

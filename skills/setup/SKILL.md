@@ -23,7 +23,7 @@ Set up Claude Code on this project. Rules for layers, merging, marketplaces and 
 ## 1. Gather (first turn, no questions)
 
 Before the first question, silently, in this turn:
-- **akg files**: rules.md, `${CLAUDE_PLUGIN_ROOT}/defaults/questions.md` and `defaults/patterns/*.md`.
+- **akg files**, by exact path (no Glob there): rules.md, `${CLAUDE_PLUGIN_ROOT}/defaults/questions.md`, `defaults/patterns/common.md`, `backend.md`, `frontend.md`.
 - **Team candidate**: the `extends` of an existing `.claude/akg/config.yaml`, otherwise an obvious one (a sibling folder containing `.claude/akg/`). If there is one, run `${CLAUDE_PLUGIN_ROOT}/scripts/fetch.sh <candidate> <project root>` (keep `path`, `kind`, `version`) and read its `.claude/akg/` files, `team.md` and `.claude-plugin/marketplace.json`.
 - **The scan** (step 3).
 - **Read-only checks** the flow may need: `which` once with every CLI named by the active questions' `→` lines and by `team.md`'s tools, `claude mcp list`, `claude plugin list --json`, `gh auth status` if `gh` is there.

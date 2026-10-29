@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": ["Bash(npm test)", "Bash(npm test *)", "Bash(npm run lint)", "Bash(npm run lint *)"],
+    "ask": ["Bash(git commit *)", "Bash(git push *)", "Bash(rm *)", "Bash(npm install *)", "Bash(npm i *)", "Bash(npm add *)"],
+    "deny": ["Bash(git push --force *)", "Bash(git push * main)", "Read(**/.env*)"]
+  },
+  "extraKnownMarketplaces": {
+    "acme-team": { "source": { "source": "directory", "path": "../team" } }
+  },
+  "enabledPlugins": { "code-review@acme-team": true, "react-conventions@acme-team": true }
+}

@@ -1,0 +1,43 @@
+schema_version: "1.1"
+name: setup-first-turn-no-team
+tags: [setup, first-turn]
+execution:
+  max_turns: 30
+  allowed_tools: [Read, Glob, Grep, Skill]
+context:
+  scaffold_script: scaffold.sh
+graders:
+  # Skill permissions only cover the first turn: akg files are read before the first question.
+  - name: reads-rules
+    type: tool_used
+    tool: Read
+    input_match: "references/rules\\.md"
+  - name: reads-catalog
+    type: tool_used
+    tool: Read
+    input_match: "defaults/questions\\.md"
+  - name: no-shell-reads
+    type: regex
+    target: trace
+    pattern: "\"command\":\"(cd |cat |ls |find )"
+    match: not_contains
+  - name: writes-nothing
+    type: tool_used
+    tool: Write
+    min: 0
+    max: 0
+  - name: no-ask-user-question
+    type: tool_used
+    tool: AskUserQuestion
+    min: 0
+    max: 0
+  - name: asks-team-config
+    type: regex
+    pattern: "team config"
+    flags: i
+  - name: one-question-guess-none
+    type: llm
+    criteria: >-
+      The message asks exactly one question: which team config to extend. Answers are numbered,
+      answer 1 is Claude's guess marked as such, and the guess is "none" (no team config found).
+      No other question (project type, DoD…) is asked yet.

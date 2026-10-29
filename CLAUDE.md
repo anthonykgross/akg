@@ -90,7 +90,7 @@ Code convention **templates** (`common`, `backend`, `frontend`). Claude adapts t
 - **Settings merge.** Deep merge into `.claude/settings.json`: objects key by key, arrays concatenated and deduplicated; a differing scalar is shown as a conflict. akg never removes anything. Settings derived from answers (`→ Settings:` lines) are not stored: they are recomputed from the answers at setup and pull.
 - **Plugins from an external repo** must be installed once per developer; akg gives the exact install command when proposing them.
 - **Stack and commands** (test, lint, build) are **detected, then always shown for confirmation or edit**. Prefer commands already declared in the project (`package.json` scripts, `Makefile` targets…); never invent elaborate ones.
-- **Team cache** in `~/.cache/akg/`, refreshed on each `/akg:setup` and `/akg:pull`. Past team versions for pull diffs go to `~/.cache/akg/snapshots/<commit>` and are reused.
+- **Team cache** in `~/.cache/akg/`, refreshed on each `/akg:setup` and `/akg:pull`. Past team versions for pull diffs go to `~/.cache/akg/snapshots/<commit>` and are reused. A local team folder needs no cache; when the cache is read-only (sandboxed session), snapshots go to `$TMPDIR/akg-snapshots/`.
 - **`/akg:pull`** never overwrites a local override without approval: it shows the conflict ("team says X, project says Y") and lets the user keep local, take team, or merge. Each non-conflicting change is also proposed (Apply / Keep current); declining a config value makes it an override; a declined list addition or template change is just not applied (`synced` moves on, so it is not proposed again). A new template convention that contradicts the existing code is flagged in one line.
 - **Sync reminder.** A `SessionStart` hook gets the team's latest version (`git ls-remote` for a repo, download + hash for a remote file; ~2 s timeout) and compares it with `synced`. Silent when nothing changed or offline; otherwise one line: `akg: team config updated — /akg:pull`. Shown once per new team version (notification state per developer in `~/.cache/akg/`).
 - **Branch.** `extends: <source>#<ref>` pins a branch, tag or commit (Claude Code's own `owner/repo#ref` syntax). Each ref has its own cache; the reminder watches that ref; the team marketplace gets the same `ref`. Ignored, with a warning, on a single file.
@@ -143,10 +143,12 @@ fixtures/              # sandbox projects for manual testing
   source/              # empty folder for /akg:source-init
   team/                # local team repo (marketplace + .claude/akg/)
   try.sh               # copy fixtures to a temp dir, print the command to run
+evals/                 # claude plugin eval suite: one case per flow, run.sh, lib/fixture.sh scaffold
 README.md
 ```
 
 ## Testing
 
 - Load: `claude --plugin-dir <repo>`; reload after edits: `/reload-plugins`; check: `claude plugin validate .`.
-- Replay each user flow by hand on `fixtures/`. `claude plugin eval` later.
+- Replay each user flow by hand on `fixtures/`, in manual mode.
+- Automated: `evals/run.sh` (`claude plugin eval`, one case per flow on `fixtures/`; see `evals/README.md`). Needs the Bash sandbox (`bubblewrap`, `socat`, and on Ubuntu the AppArmor user-namespace setting). Evals have no simulated user: full cases tell Claude to take each guess as the answer.

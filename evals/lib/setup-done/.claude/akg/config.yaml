@@ -1,0 +1,10 @@
+extends: ../team
+synced: __SYNCED__
+workflow:
+  type: product
+  review: light
+  autonomy: []
+tracker:
+  tool: none
+deploy:
+  target: none

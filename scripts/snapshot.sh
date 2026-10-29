@@ -3,7 +3,8 @@
 #
 # Usage: snapshot.sh <kind> <path> <version>     (kind, path, version as printed by fetch.sh)
 # Prints the path of the old snapshot: a directory (kind=dir) or a file (kind=file).
-# Directory snapshots are cached in ~/.cache/akg/snapshots/<commit> and reused.
+# Directory snapshots are cached in ~/.cache/akg/snapshots/<commit> (or $TMPDIR/akg-snapshots/<commit>
+# when the cache is read-only) and reused.
 # Exits 1 when that version is not available (no history, unknown commit, file version not cached).
 set -euo pipefail
 
@@ -20,7 +21,12 @@ case "$kind" in
     git -C "$path" cat-file -e "$version^{commit}" 2>/dev/null \
       || git -C "$path" fetch -q --depth 1 origin "$version" 2>/dev/null \
       || exit 1
-    mkdir -p "$(dirname "$out")"
+    # The cache may be read-only (sandboxed sessions): fall back to a temp dir.
+    if ! mkdir -p "$(dirname "$out")" 2>/dev/null; then
+      out="${TMPDIR:-/tmp}/akg-snapshots/$version"
+      [ -d "$out" ] && { echo "$out"; exit 0; }
+      mkdir -p "$(dirname "$out")"
+    fi
     tmp="$(mktemp -d "$out.XXXXXX")"
     for d in .claude/akg .claude-plugin; do
       if git -C "$path" cat-file -e "$version:$d" 2>/dev/null; then

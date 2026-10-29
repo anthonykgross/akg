@@ -1,0 +1,45 @@
+schema_version: "1.1"
+name: setup-full-monorepo
+tags: [setup, full, monorepo]
+execution:
+  max_turns: 80
+  timeout_seconds: 900
+  allowed_tools: [Read, Glob, Grep, Skill]
+context:
+  scaffold_script: scaffold.sh
+graders:
+  - name: root-claude-md
+    type: file_exists
+    path: CLAUDE.md
+  - name: web-claude-md
+    type: file_exists
+    path: web/CLAUDE.md
+  - name: api-claude-md
+    type: file_exists
+    path: api/CLAUDE.md
+  - name: no-infra-claude-md
+    type: file_exists
+    path: infra/CLAUDE.md
+    exists: false
+  - name: web-uses-npm
+    type: regex
+    target: { source: file, path: web/CLAUDE.md }
+    pattern: "npm test"
+  - name: api-uses-make
+    type: regex
+    target: { source: file, path: api/CLAUDE.md }
+    pattern: "make test"
+  # Destructive commands of a detected tool: ask, in both forms.
+  - name: terraform-apply-asks-bare
+    type: regex
+    target: trace
+    pattern: '"file_path":"[^"]*/\.claude/settings\.json"(?:,"\w+":(?:"(?:[^"\\]|\\.)*"|true|false))*?,"(?:content|new_string)":"(?:[^"\\]|\\.)*\\"Bash\(terraform apply\)\\"'
+  - name: terraform-destroy-asks-args
+    type: regex
+    target: trace
+    pattern: '"file_path":"[^"]*/\.claude/settings\.json"(?:,"\w+":(?:"(?:[^"\\]|\\.)*"|true|false))*?,"(?:content|new_string)":"(?:[^"\\]|\\.)*\\"Bash\(terraform destroy \*\)\\"'
+  - name: terraform-plan-free
+    type: regex
+    target: trace
+    pattern: '"file_path":"[^"]*/\.claude/settings\.json"(?:,"\w+":(?:"(?:[^"\\]|\\.)*"|true|false))*?,"(?:content|new_string)":"(?:[^"\\]|\\.)*terraform plan'
+    match: not_contains
